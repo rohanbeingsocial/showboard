@@ -114,7 +114,7 @@ async function poll($: EngineInterface, announce: boolean, now = false): Promise
   pollingSince = started
   try {
     const s = (await $.state.get({ plugin: 'showboard', key: 'pane' })).value ?? INITIAL
-    const health = await getJson<Health>($, `${s.url}/health?pane=claude-code`)
+    const health: Health | null = await getJson($, `${s.url}/health?pane=claude-code`)
     if (!health?.ok) {
       if (s.online) await update($, pane, p => ({ ...p, online: false }))
       return
@@ -126,8 +126,9 @@ async function poll($: EngineInterface, announce: boolean, now = false): Promise
       return
     }
     // The board on screen; before any is shown, the newest one saved.
-    const id = health.board ?? (await getJson<{ id: string }[]>($, `${s.url}/boards`))?.[0]?.id
-    const board = id ? await getJson<TextBoard>($, `${s.url}/boards/${encodeURIComponent(id)}`) : null
+    const saved: { id: string }[] | null = health.board ? null : await getJson($, `${s.url}/boards`)
+    const id = health.board ?? saved?.[0]?.id
+    const board: TextBoard | null = id ? await getJson($, `${s.url}/boards/${encodeURIComponent(id)}`) : null
     const fresh = s.shows >= 0 && health.shows > s.shows
     await update($, pane, p => ({ ...p, online: true, format, page, shows: health.shows, ...(board ? { board: trim(board), picked: false } : {}) }))
     if (announce && fresh && board) await $.ui.open({ id: PANE, title: 'Board' })
@@ -141,11 +142,11 @@ async function poll($: EngineInterface, announce: boolean, now = false): Promise
 /** Older (1) or newer (-1) among the saved boards. */
 async function step($: EngineInterface, by: number): Promise<void> {
   const s = (await $.state.get({ plugin: 'showboard', key: 'pane' })).value ?? INITIAL
-  const list = await getJson<{ id: string }[]>($, `${s.url}/boards`)
+  const list: { id: string }[] | null = await getJson($, `${s.url}/boards`)
   if (!list?.length) return
   const at = list.findIndex(b => b.id === (s.board as { id?: string } | null)?.id)
   const target = list[Math.min(list.length - 1, Math.max(0, (at < 0 ? 0 : at) + by))]!
-  const board = await getJson<TextBoard>($, `${s.url}/boards/${encodeURIComponent(target.id)}`)
+  const board: TextBoard | null = await getJson($, `${s.url}/boards/${encodeURIComponent(target.id)}`)
   if (board) await update($, pane, p => ({ ...p, board: trim(board), picked: target.id !== list[0]!.id }))
 }
 
@@ -161,10 +162,14 @@ async function act($: EngineInterface, url: string, block: Extract<Block, { kind
   }
 }
 
-async function getJson<T>($: EngineInterface, url: string): Promise<T | null> {
+/**
+ * A JSON answer from Showboard, or null. Untyped: Anthropic's plugin directory refuses a type
+ * argument on a call that passes `$`, so each caller declares the type it reads.
+ */
+async function getJson($: EngineInterface, url: string): Promise<any> {
   try {
     const res = await $.http.fetch(url)
-    return res.ok ? (JSON.parse(res.text) as T) : null
+    return res.ok ? JSON.parse(res.text) : null
   } catch {
     return null
   }

@@ -1,9 +1,16 @@
 {
   "name": "showboard",
-  "version": "0.1.0",
+  "displayName": "Showboard",
+  "version": "0.1.1",
   "description": "Showboard's boards in a pane beside the chat: charts, tables and notes drawn as text, updated as Claude draws them.",
-  "author": { "name": "Rohan" },
+  "author": { "name": "Rohan", "url": "https://github.com/rohanbeingsocial" },
   "license": "MIT",
+  "repository": "https://github.com/rohanbeingsocial/showboard",
+  "keywords": ["dashboard", "charts", "tables", "sql", "excel", "csv", "mcp"],
+  "icon": "./.claude-plugin/icon.png",
+  "documentationUrl": "https://github.com/rohanbeingsocial/showboard/blob/main/plugins/claude-code/README.md",
+  "supportUrl": "https://github.com/rohanbeingsocial/showboard/issues",
+  "privacyPolicyUrl": "https://github.com/rohanbeingsocial/showboard/blob/main/plugins/claude-code/README.md#privacy",
   "types": "./types/index.d.ts",
   "userConfig": {
     "url": {
