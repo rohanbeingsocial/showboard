@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { AGENTS, pickAgents, setTomlTable, writeAgent, type AgentName } from "../src/cli/agents.js";
+import { AGENTS, pickAgents, readTomlTable, setTomlTable, writeAgent, type AgentName } from "../src/cli/agents.js";
 
 const launch = { command: "npx", args: ["-y", "showboard", "mcp", "--file", "data"] };
 const agent = (name: AgentName) => AGENTS.find((a) => a.name === name)!;
@@ -85,5 +85,18 @@ describe("init for each agent", () => {
       ].join("\n"),
     );
     expect(setTomlTable("", "mcp_servers.showboard", { command: "npx" })).toBe('[mcp_servers.showboard]\ncommand = "npx"\n');
+  });
+
+  it("reads back the entry it wrote, for every agent", () => {
+    const root = folder();
+    const home = folder();
+    const windows = { command: "node", args: ["C:\\Rohan's stuff\\main.js", "mcp", "--file", "data", "--port", "4711"] };
+    for (const a of AGENTS) {
+      writeAgent(a, windows, root, home);
+      expect(a.read(readFileSync(a.file(root, home), "utf8")), a.name).toEqual(windows);
+    }
+    expect(agent("claude").read('{"mcpServers":{"other":{"command":"x"}}}')).toBeUndefined();
+    expect(readTomlTable("[mcp_servers.showboard]\ncommand = 'npx'\nargs = ['-y', 'showboard']\n", "mcp_servers.showboard")).toEqual({ command: "npx", args: ["-y", "showboard"] });
+    expect(readTomlTable('[mcp_servers.other]\ncommand = "x"\n', "mcp_servers.showboard")).toBeUndefined();
   });
 });

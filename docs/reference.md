@@ -349,6 +349,8 @@ showboard mcp   --db <...> | <files or folders...>  [--port 4710] [--boards .sho
 showboard mcp   --url <http://localhost:3000/showboard>
 showboard init  [--db <...> | <files or folders...> | --url <...>]  [--agent <names>] [--port 4710] [--agent-model sonnet]
 showboard pane  [--url <http://127.0.0.1:4710>] [--once] [--currency INR --locale en-IN]
+showboard doctor [--agent <names>] [--json]
+showboard guide
 ```
 
 | Command | What it does |
@@ -358,6 +360,8 @@ showboard pane  [--url <http://127.0.0.1:4710>] [--once] [--currency INR --local
 | `mcp --url` | Only forwards to the Showboard your own server mounts |
 | `init` | Adds a `showboard` server to each agent's settings in this folder ([below](#init-for-each-agent)), and for Claude Code writes `.claude/agents/board-builder.md` unless one exists |
 | `pane` | The board on screen, drawn as text in this terminal, following each new board ([below](#panes)) |
+| `doctor` | Checks this folder's setup as each agent will meet it. It reads each agent's settings and starts each Showboard entry there with the same command and folder. Then it makes the agent's first MCP calls (`initialize`, `tools/list`, `describe_data`) and reports the tools and tables, or what failed with a fix. Entries that forward to an app (`--url`) need the app running. Exits 1 while anything must be fixed; `--json` prints `{ ok, root, checks: [{ check, status, detail, fix? }], next }`. `--agent` checks only the agents named |
+| `guide` | Prints [SETUP.md](../SETUP.md), the setup steps written for coding agents, with the command that runs Showboard on this machine filled in |
 
 | Option | Default | What it does |
 |---|---|---|

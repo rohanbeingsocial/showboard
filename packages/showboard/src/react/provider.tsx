@@ -24,11 +24,17 @@ const NO_FORMAT: FormatOptions = {};
 
 function tabId(): string {
   const key = "showboard-tab";
-  const saved = sessionStorage.getItem(key);
-  if (saved) return saved;
-  const id = crypto.randomUUID();
-  sessionStorage.setItem(key, id);
-  return id;
+  try {
+    const saved = sessionStorage.getItem(key);
+    if (saved) return saved;
+    const id = crypto.randomUUID();
+    sessionStorage.setItem(key, id);
+    return id;
+  } catch {
+    // No sessionStorage: a server render (Next.js), which the browser repeats with its own id,
+    // or storage the browser blocks, where the tab gets a new id each load.
+    return typeof window === "undefined" ? "" : crypto.randomUUID();
+  }
 }
 
 /** Pass `components` and `format` as stable objects (module constants or useMemo): a new object redraws every board. */

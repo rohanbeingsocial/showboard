@@ -96,6 +96,14 @@ Then run the CLI as `node <this repo>/packages/showboard/dist/cli/main.js`. For 
 
 ## Quick Start
 
+### Let your agent set it up
+
+In your project, ask your coding agent:
+
+> *Set up Showboard in this project: run `npx showboard guide` and follow it.*
+
+Until Showboard is on npm, point the agent at a built checkout instead: *"…follow SETUP.md in `<this repo>`."* The guide ([SETUP.md](SETUP.md)) has the agent pick the path that fits the project: spreadsheets, a database, or your own app (with server code for Next.js, Express, Hono and `node:http`). The agent then checks its own work with `showboard doctor`, which starts Showboard the way each agent will and says how to fix anything that fails.
+
 ### Try the demo
 
 A small furniture shop's admin app, with its data in SQLite:
@@ -342,6 +350,7 @@ Showboard tells the agent to reach for a recipe first, then `draw`. New recipes 
 | `formatValue` *(/react)* | fn | Prints numbers the way boards do, for your own components. |
 | `boardToText` *(/text)* | fn | A board as lines of styled text, for a pane of your own. |
 | `showboard serve \| mcp \| init \| pane` | CLI | Showboard's own board page, the MCP server, setup for each agent, and the terminal pane. |
+| `showboard guide \| doctor` | CLI | Setup steps written for coding agents, and a check of the setup as each agent will meet it. |
 
 Full reference, with every option, prop, tool, flag and the chart-picking rules: [docs/reference.md](docs/reference.md).
 
