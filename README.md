@@ -141,15 +141,6 @@ The agent never types a figure into a chart: every number comes from a query, an
 
 A folder of spreadsheets is all it needs. Here Claude Code compares 2026 orders in an Excel workbook with targets in a CSV file, amounts in rupees, and *Show sources* opens the SQL behind a chart.
 
-## Inside your own app
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.gif" />
-  <img src="docs/images/demo.gif" alt="Claude Code beside the demo shop's admin app. Asked to open the Aero Standing Desk's orders from October, Claude reads the app's screen with get_screen, then runs the app's filter_orders action, and the app moves from its board page to the Orders page, filtered to October 2026 and the Aero Standing Desk" width="100%" />
-</picture>
-
-Mount Showboard in your React app and the agent can also see what is on screen and run the actions you register. Here Claude reads the demo shop's screen with `get_screen`, then runs the shop's own `filter_orders` action, and the app opens its Orders page, filtered.
-
 ## In a real app
 
 <picture>
@@ -158,6 +149,15 @@ Mount Showboard in your React app and the agent can also see what is on screen a
 </picture>
 
 It works on real data too. Meridian, a private investing app, has Showboard inside. Here Claude Code is asked whether silver rose each time the gold/silver ratio crossed above 90. It reads two years of MCX gold and silver prices from the app's own API and draws one board: the ratio and silver side by side, each stretch above 90 marked in orange, and silver's moves 1, 3 and 6 months after each cross.
+
+## Inside your own app
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.gif" />
+  <img src="docs/images/demo.gif" alt="Claude Code beside the demo shop's admin app. Asked to open the Aero Standing Desk's orders from October, Claude reads the app's screen with get_screen, then runs the app's filter_orders action, and the app moves from its board page to the Orders page, filtered to October 2026 and the Aero Standing Desk" width="100%" />
+</picture>
+
+Mount Showboard in your React app and the agent can also see what is on screen and run the actions you register. Here Claude reads the demo shop's screen with `get_screen`, then runs the shop's own `filter_orders` action, and the app opens its Orders page, filtered.
 
 ## Beside your terminal
 
