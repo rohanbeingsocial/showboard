@@ -254,7 +254,7 @@ Details:
 
 ### What draw returns
 
-For the [README's example board](../README.md#examples):
+For the [README's example board](../README.md#put-boards-in-your-own-app) (under *More examples*):
 
 ```json
 {

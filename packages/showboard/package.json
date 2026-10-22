@@ -1,18 +1,40 @@
 {
   "name": "showboard",
   "version": "0.2.0",
-  "description": "A pen for your coding agent (Claude Code, Codex, OpenCode, Gemini CLI…): it draws boards of charts, tables and notes from your data, read-only; shows them in your app or a terminal pane; and runs the actions your app allows.",
+  "description": "Your coding agent answers with dashboards, not paragraphs. An MCP server and React components that let Claude Code, Codex, Cursor, Gemini CLI and other agents draw charts and tables from read-only SQL, Excel and CSV, in your browser, your app or a terminal pane.",
   "license": "MIT",
+  "homepage": "https://github.com/rohanbeingsocial/showboard#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rohanbeingsocial/showboard.git",
+    "directory": "packages/showboard"
+  },
+  "bugs": {
+    "url": "https://github.com/rohanbeingsocial/showboard/issues"
+  },
   "type": "module",
   "keywords": [
     "mcp",
+    "mcp-server",
+    "model-context-protocol",
     "claude-code",
     "codex",
-    "opencode",
+    "cursor",
     "gemini-cli",
+    "opencode",
     "coding-agent",
-    "generative-ui",
+    "ai-agent",
     "dashboard",
+    "charts",
+    "data-visualization",
+    "generative-ui",
+    "text-to-sql",
+    "sql",
+    "postgres",
+    "sqlite",
+    "excel",
+    "csv",
+    "react",
     "terminal",
     "json-render"
   ],
