@@ -1,6 +1,6 @@
 # Contributing to Showboard
 
-Thanks for helping. Showboard is vibecoded: coding agents, mostly Claude Code, wrote most of it, and pull requests written the same way are welcome. What matters is that you have read the change and the tests pass.
+Thanks for helping. Showboard is built with AI assistance, mostly from Claude Code, and AI-assisted pull requests are welcome. What matters is that you have read the change and the tests pass.
 
 ## Set up
 
@@ -29,7 +29,7 @@ The tests are in `packages/showboard/test`, and the folders are described in the
 - Keep each one to a single change, and say what it does and why.
 - Add or update a test when you change what Showboard does.
 - Update the [README](README.md) or [docs/reference.md](docs/reference.md) when you change something people see or type.
-- Code from a coding agent is fine. Read the diff before you send it.
+- AI-assisted code is fine. Read the diff before you send it.
 - For anything bigger than a fix, open an issue first, so the idea can be agreed before the work.
 
 ## Reporting a bug

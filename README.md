@@ -10,7 +10,7 @@ Showboard is an open-source **MCP server** that lets **Claude Code**, Codex, Cur
 [![License: MIT](https://img.shields.io/badge/license-MIT-2f6feb?style=flat-square)](LICENSE)
 [![Node.js 22.13 or later](https://img.shields.io/badge/node-%E2%89%A522.13-5fa04e?style=flat-square&logo=nodedotjs&logoColor=white)](#quick-start)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white)](packages/showboard/src)
-[![Vibecoded with Claude Code](https://img.shields.io/badge/vibecoded%20with-Claude%20Code-d97757?style=flat-square&logo=claude&logoColor=white)](#contributing)
+[![AI-assisted with Claude Code](https://img.shields.io/badge/AI--assisted-Claude%20Code-d97757?style=flat-square&logo=claude&logoColor=white)](#contributing)
 
 **[Quick start](#quick-start)** &nbsp;·&nbsp; **[How it works](#how-it-works)** &nbsp;·&nbsp; **[Benchmark](#benchmark)** &nbsp;·&nbsp; **[Docs](docs/reference.md)**
 
@@ -27,7 +27,7 @@ Showboard is an open-source **MCP server** that lets **Claude Code**, Codex, Cur
 </p>
 
 > [!NOTE]
-> **Showboard is vibecoded.** It was built by directing AI coding agents, mostly Claude Code, instead of writing it line by line: a tool for coding agents, made by coding agents. It has a test suite and a [measured benchmark](bench/README.md), but it is young. Read the code before you point it at data that matters.
+> **Built with AI assistance.** Showboard is developed with help from AI coding agents, mostly Claude Code. A test suite and a [measured benchmark](bench/README.md) keep it honest. It is young, so issues and pull requests are welcome.
 
 ## Why Showboard
 
@@ -445,7 +445,7 @@ Yes, with any agent that speaks MCP. `showboard init --agent` writes the setting
 
 ## Contributing
 
-Contributions are welcome, including ones written with a coding agent: Showboard was built that way. Read your diff before you send it, and make sure the tests pass. For anything bigger than a fix, open an issue first. [CONTRIBUTING.md](CONTRIBUTING.md) has the details.
+Contributions are welcome, AI-assisted ones included. Read your diff before you send it, and make sure the tests pass. For anything bigger than a fix, open an issue first. [CONTRIBUTING.md](CONTRIBUTING.md) has the details.
 
 ```bash
 npm install
