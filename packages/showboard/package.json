@@ -1,6 +1,6 @@
 {
   "name": "showboard",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "mcpName": "io.github.rohanbeingsocial/showboard",
   "description": "Your coding agent answers with dashboards, not paragraphs. An MCP server and React components that let Claude Code, Codex, Cursor, Gemini CLI and other agents draw charts and tables from read-only SQL, Excel and CSV, in your browser, your app or a terminal pane.",
   "license": "MIT",
