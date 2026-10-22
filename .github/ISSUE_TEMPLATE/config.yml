@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and boards you made
+    url: https://github.com/rohanbeingsocial/showboard/discussions
+    about: Ask how to do something, or show what you built.
+  - name: A security problem
+    url: https://github.com/rohanbeingsocial/showboard/security/advisories/new
+    about: Report it privately, so it isn't public before a fix.

@@ -141,6 +141,15 @@ The agent never types a figure into a chart: every number comes from a query, an
 
 A folder of spreadsheets is all it needs. Here Claude Code compares 2026 orders in an Excel workbook with targets in a CSV file, amounts in rupees, and *Show sources* opens the SQL behind a chart.
 
+## In a real app
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/meridian-dark.gif" />
+  <img src="docs/images/meridian.gif" alt="Claude Code in an investing app's folder beside Showboard's page. Asked whether silver went up each time the gold/silver ratio crossed above 90 in the past 2 years, Claude reads gold and silver prices from the app's API and draws a board: the ratio crossed above 90 four times, all in February and March 2025; silver was higher 6 months later all 4 times and 1 month later 3 times out of 4; the ratio is 70.7 today. Line charts of the ratio and of silver mark the stretches above 90, bars show silver's moves 1, 3 and 6 months after each cross, and a table lists each stretch" width="100%" />
+</picture>
+
+It works on real data too. Meridian, a private investing app, has Showboard inside. Here Claude Code is asked whether silver rose each time the gold/silver ratio crossed above 90. It reads two years of MCX gold and silver prices from the app's own API and draws one board: the ratio and silver side by side, each stretch above 90 marked in orange, and silver's moves 1, 3 and 6 months after each cross.
+
 ## Inside your own app
 
 <picture>

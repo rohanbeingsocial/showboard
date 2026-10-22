@@ -1,0 +1,67 @@
+name: Bug report
+description: Something Showboard did wrong, or a board that looks wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: asked
+    attributes:
+      label: What you asked or ran
+      description: The question you asked your agent, or the command you ran.
+      placeholder: Which regions are behind their 2026 targets?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: got
+    attributes:
+      label: What you got
+      description: >-
+        The error, or a screenshot of the board. A board's JSON file from the
+        `.showboard/boards` folder helps, but it holds the board's rows, so attach it
+        only if they are fine to share.
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Claude Code
+        - Codex
+        - OpenCode
+        - Gemini CLI
+        - Cursor
+        - VS Code
+        - Antigravity
+        - Windsurf
+        - Another agent
+        - None (showboard serve, the pane, or my own app)
+    validations:
+      required: true
+  - type: dropdown
+    id: data
+    attributes:
+      label: Data
+      options:
+        - SQLite
+        - Postgres
+        - Excel or CSV files
+        - My app's own sources
+  - type: input
+    id: version
+    attributes:
+      label: Showboard version
+      description: From `npm ls showboard`, or the version npx ran.
+      placeholder: 0.2.0
+  - type: input
+    id: system
+    attributes:
+      label: Operating system and Node.js version
+      placeholder: Windows 11, Node.js 22.13
+    validations:
+      required: true
