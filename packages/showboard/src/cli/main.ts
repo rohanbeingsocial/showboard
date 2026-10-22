@@ -10,6 +10,7 @@ import { AGENTS, agentNames, pickAgents, writeAgent, type Launch } from "./agent
 import { formatReport, nodeHasSqlite, runDoctor, shellArg } from "./doctor.js";
 import { remoteBackend, runMcp, type ToolBackend } from "./mcp.js";
 import { runPane } from "./pane.js";
+import { noTools, pluginIdle } from "./plugin.js";
 
 const HELP = `showboard: a pen for your coding agent, to draw, show and do in your app
 
@@ -28,6 +29,11 @@ const HELP = `showboard: a pen for your coding agent, to draw, show and do in yo
 
   showboard mcp --url <http://localhost:3000/api/showboard>
       Only forward to a Showboard your own server mounts.
+
+  showboard mcp --plugin [--port 4711]
+      How the Claude Code plugin starts Showboard, on the data in SHOWBOARD_DATA or
+      SHOWBOARD_DB. It lists no tools in a folder whose .mcp.json starts its own Showboard,
+      and none until data is set (then it says how to set it).
 
   showboard pane [--url <http://127.0.0.1:4710>] [--once]
       The boards as text in this terminal: split it beside any coding agent and each board
@@ -54,7 +60,8 @@ const HELP = `showboard: a pen for your coding agent, to draw, show and do in yo
 
   Spreadsheets: .xlsx, .xlsm, .csv and .tsv files, or folders of them (also --file <path>).
   Each sheet becomes a table your agent can query; the files are only read, and reloaded
-  when they change. --db can also come from the SHOWBOARD_DB environment variable.
+  when they change. --db can also come from the SHOWBOARD_DB environment variable, and
+  the data from SHOWBOARD_DATA (a spreadsheet, a folder of them or a SQLite file).
   BHARATCODE_API_KEY adds a box to ask questions on the board page, with BharatCode's model.
 
   Amounts print in the currency the spreadsheets are written in (₹1,200 → rupees), or
@@ -78,6 +85,7 @@ const { positionals, values } = parseArguments({
     locale: { type: "string" },
     once: { type: "boolean" },
     json: { type: "boolean" },
+    plugin: { type: "boolean" },
     help: { type: "boolean", short: "h" },
     version: { type: "boolean", short: "v" },
   },
@@ -93,8 +101,18 @@ function parseArguments<const T extends ParseArgsConfig>(config: T) {
 }
 const command = positionals[0];
 const port = Number(values.port);
-const files = [...(values.file ?? []), ...positionals.slice(1)];
-const db = values.db ?? (files.length ? undefined : process.env.SHOWBOARD_DB);
+/** An environment setting; empty, or a ${…} placeholder nobody filled in, is no setting. */
+function setting(name: string): string | undefined {
+  const value = process.env[name]?.trim();
+  return value && !value.includes("${") ? value : undefined;
+}
+const givenFiles = [...(values.file ?? []), ...positionals.slice(1)];
+// Without data on the command line: SHOWBOARD_DB, else SHOWBOARD_DATA, which may also name a
+// database (the plugin's one Data setting takes any of them).
+const envData = setting("SHOWBOARD_DATA");
+const envDataIsDb = envData !== undefined && /^postgres(ql)?:\/\/|\.(sqlite3?|db3?)$/i.test(envData);
+const db = values.db ?? (givenFiles.length ? undefined : (setting("SHOWBOARD_DB") ?? (envDataIsDb ? envData : undefined)));
+const files = givenFiles.length || db || !envData ? givenFiles : [envData];
 const page = `http://localhost:${port}`;
 const openHint = `Ask the user to open ${page} in a browser, or to run "showboard pane" in a terminal beside you.`;
 
@@ -178,13 +196,19 @@ async function main(): Promise<void> {
 
   if (command === "mcp") {
     console.log = console.error; // stdout carries the MCP protocol only
+    const idle = values.plugin ? pluginIdle(process.cwd(), Boolean(values.url || db || files.length)) : null;
+    if (idle) {
+      runMcp(noTools, idle.instructions, VERSION);
+      return;
+    }
     let backend: ToolBackend;
     if (values.url) backend = remoteBackend(values.url);
     else if (await isShowboardAt(local)) backend = remoteBackend(local);
     else {
       const board = await start();
       try {
-        await serve(board.handler({ viewer: true, ask: askFromEnv() }), { port });
+        // The plugin's README promises no host but the user's database: no question box there.
+        await serve(board.handler({ viewer: true, ask: values.plugin ? undefined : askFromEnv() }), { port });
         console.error(`showboard: serving the browser bridge and board page on ${local}`);
       } catch (err) {
         throw new Error(`Port ${port} is taken by something that is not Showboard (${(err as Error).message}). Pass --port.`);
@@ -194,12 +218,12 @@ async function main(): Promise<void> {
         call: (name, input) => board.callTool(name, input),
       };
     }
-    runMcp(backend, values.url ? INSTRUCTIONS : `${INSTRUCTIONS} Boards appear at ${page}; if no browser has it open, tell the user to open it.`);
+    runMcp(backend, values.url ? INSTRUCTIONS : `${INSTRUCTIONS} Boards appear at ${page}; if no browser has it open, tell the user to open it.`, VERSION);
     return;
   }
 
   if (command === "init") {
-    const source = values.db ? ["--db", values.db] : files.flatMap((f) => ["--file", f]);
+    const source = values.db ? ["--db", values.db] : givenFiles.flatMap((f) => ["--file", f]);
     const formatArgs = [...(values.currency ? ["--currency", values.currency] : []), ...(values.locale ? ["--locale", values.locale] : [])];
     const args = values.url ? ["--url", values.url] : [...source, ...(values.port !== "4710" ? ["--port", values.port] : []), ...formatArgs];
     const root = process.cwd();
@@ -239,8 +263,8 @@ async function main(): Promise<void> {
     }
     if (launch([]).command === "node") console.log(`showboard: these entries start this checkout (${fileURLToPath(import.meta.url)}); run init again from an npm install to use npx.`);
     if (values.db && /:\/\/[^/:]+:[^@/]+@/.test(values.db)) console.log("showboard: that URL holds a password. Prefer SHOWBOARD_DB in your environment and leave --db out of the settings files.");
-    for (const f of files) if (!existsSync(f)) console.log(`showboard: ${f} does not exist yet.`);
-    if (!values.url && !values.db && !files.length && !process.env.SHOWBOARD_DB) console.log("showboard: no --db or files given; set SHOWBOARD_DB before starting your agent.");
+    for (const f of givenFiles) if (!existsSync(f)) console.log(`showboard: ${f} does not exist yet.`);
+    if (!values.url && !values.db && !givenFiles.length && !setting("SHOWBOARD_DB")) console.log("showboard: no --db or files given; set SHOWBOARD_DB before starting your agent.");
     const others = agentNames.filter((n) => !written.includes(n));
     // Commands as they can be run from here, with a password in a URL left out.
     const same = args.map((a) => (/:\/\/[^/:]+:[^@/]+@/.test(a) ? "<url>" : shellArg(a))).join(" ");

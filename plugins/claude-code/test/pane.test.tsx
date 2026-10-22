@@ -41,7 +41,8 @@ const PANE = {
   props: { title: 'Board', isFocused: false, bodyColumns: 48, placement: 'dock', scroll: { offset: 0, bodyRows: 40 }, view: {} },
 } as const
 
-function showboard(on: On, calls: string[], toasts: string[]) {
+/** A Showboard on `port`; with `mcpJson`, the folder's .mcp.json starts it there. */
+function showboard(on: On, calls: string[], toasts: string[], port = 4799, mcpJson = true) {
   on('session.start', (_, e) => ({ cwd: e.cwd }))
   on('command.register', () => ({ value: { command: 'board' } }))
   on('ui.open', () => ({ value: { isPlaced: true } }))
@@ -50,12 +51,12 @@ function showboard(on: On, calls: string[], toasts: string[]) {
     toasts.push(e.text)
     return { value: undefined }
   })
-  // The folder's .mcp.json starts Showboard on port 4799.
-  on('fs.read', () => ({ value: JSON.stringify({ mcpServers: { showboard: { command: 'npx', args: ['-y', 'showboard', 'mcp', '--port', '4799'] } } }) }))
+  on('fs.read', () => (mcpJson ? { value: JSON.stringify({ mcpServers: { showboard: { command: 'npx', args: ['-y', 'showboard', 'mcp', '--port', String(port)] } } }) } : { deny: 'no .mcp.json here' }))
   on('http.fetch', (_, e) => {
     calls.push(e.url)
+    if (!e.url.startsWith(`http://127.0.0.1:${port}/`)) return { deny: 'nothing listens there' }
     const ok = (body: unknown) => ({ value: { status: 200, ok: true, headers: {}, text: JSON.stringify(body) } })
-    const path = e.url.replace('http://127.0.0.1:4799', '')
+    const path = e.url.replace(`http://127.0.0.1:${port}`, '')
     if (path.startsWith('/health')) return ok({ ok: true, board: 'b_1', shows: 1, page: true })
     if (path === '/tools/describe_data') return ok({ ok: true, content: JSON.stringify({ format: { locale: 'en-US', currency: 'USD' } }) })
     if (path === '/boards/b_1') return ok(BOARD)
@@ -92,4 +93,16 @@ test("a board's button runs the app's action and says what happened", async ($, 
   await ui.press({ key: 'action-1' })
   expect(toasts).toEqual(['Open North: No browser has the app open, so nothing is on screen yet.'])
   await ui.unmount()
+})
+
+test("with no .mcp.json, the pane looks for the plugin's own Showboard, then showboard serve's", async ($, on) => {
+  const calls: string[] = []
+  showboard(on, calls, [], 4710, false)
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await $.command.run(BOARD_COMMAND)
+  await $.command.run(BOARD_COMMAND)
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect((await ui.find({ type: 'Text', text: /Revenue by region/ }))?.text).toBe('Revenue by region')
+  await ui.unmount()
+  expect(calls[0]).toMatch(/^http:\/\/127\.0\.0\.1:4711\/health/)
 })

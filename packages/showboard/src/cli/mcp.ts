@@ -43,7 +43,8 @@ export function remoteBackend(url: string, startWaitMs = 25_000): ToolBackend {
   };
 }
 
-export function runMcp(backend: ToolBackend, instructions: string): void {
+/** `instructions` may be empty: a server with nothing to say gives none. */
+export function runMcp(backend: ToolBackend, instructions: string, version: string): void {
   const send = (msg: unknown) => process.stdout.write(`${JSON.stringify(msg)}\n`);
   const fingerprint = (tools: Awaited<ReturnType<ToolBackend["list"]>>) => JSON.stringify(tools.map((t) => [t.name, t.description, t.input_schema]));
   let listed: string | null = null;
@@ -70,8 +71,8 @@ export function runMcp(backend: ToolBackend, instructions: string): void {
         return {
           protocolVersion: (params?.protocolVersion as string | undefined) ?? "2025-06-18",
           capabilities: { tools: { listChanged: true } },
-          serverInfo: { name: "showboard", version: "0.2.0" },
-          instructions,
+          serverInfo: { name: "showboard", version },
+          ...(instructions ? { instructions } : {}),
         };
       case "ping":
         return {};

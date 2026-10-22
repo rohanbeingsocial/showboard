@@ -5,10 +5,10 @@ import type { ShowboardPane } from '../types'
 import { boardToText, INKS, type Block, type Ink, type Line, type TextBoard } from './board-text.js'
 
 // The board Showboard shows last, in a pane beside the chat, drawn as text. Showboard runs
-// beside Claude Code (its MCP server, or an app that mounts it); this pane asks it every
-// couple of seconds what is on screen, and right after Claude calls draw, recipe or
-// show_board. A new board opens the pane where the terminal has room for it; /board opens
-// it anywhere.
+// beside Claude Code (the plugin's own server, the project's, or an app that mounts it); this
+// pane asks it every couple of seconds what is on screen, and right after Claude calls draw,
+// recipe or show_board. A new board opens the pane where the terminal has room for it;
+// /board opens it anywhere.
 
 const PANE = 'showboard'
 const POLL_MS = 2000
@@ -16,8 +16,11 @@ const POLL_MS = 2000
 const MAX_ROWS = 2000
 const BOARD_TOOL = /^mcp__.+__(draw|recipe|show_board)$/
 const THEME: Partial<Record<Ink, string>> = { accent: 'claude', good: 'success', bad: 'error', warn: 'warning', info: 'suggestion' }
+/** The plugin's own server (its .mcp.json starts it on 4711), and `showboard serve`'s usual port. */
+const PLUGIN_URL = 'http://127.0.0.1:4711'
+const SERVE_URL = 'http://127.0.0.1:4710'
 
-const INITIAL: ShowboardPane = { url: 'http://127.0.0.1:4710', online: false, board: null, shows: -1, picked: false, sources: false, format: null, page: false }
+const INITIAL: ShowboardPane = { url: PLUGIN_URL, online: false, board: null, shows: -1, picked: false, sources: false, format: null, page: false }
 const pane = atom({ plugin: 'showboard', key: 'pane' } as const, INITIAL)
 
 type Health = { ok: boolean; board: string | null; shows: number; page?: boolean }
@@ -25,12 +28,18 @@ type Health = { ok: boolean; board: string | null; shows: number; page?: boolean
 /** When the poll under way started: one at a time, unless one has hung past STUCK_MS. */
 let pollingSince = 0
 const STUCK_MS = 5000
+/** Where to look in turn while nothing names Showboard's URL; empty once something does. */
+let candidates: string[] = []
 
 export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'board', description: "Show Showboard's boards in a pane beside the chat" })
     const given = typeof options.url === 'string' ? options.url.trim() : ''
-    const url = (given || (await fromMcpJson($)) || INITIAL.url).replace(/\/$/, '')
+    const named = given || (await fromMcpJson($))
+    // Nothing named: the plugin's own server, which answers once its Data option is set, else
+    // a `showboard serve`. Polls try each in turn until one answers.
+    candidates = named ? [] : [PLUGIN_URL, SERVE_URL]
+    const url = (named || PLUGIN_URL).replace(/\/$/, '')
     await update($, pane, s => ({ ...s, url }))
     void poll($, false)
     $.clock.every(POLL_MS, () => void poll($, true))
@@ -69,8 +78,8 @@ export const register: Register = (on, options) => {
       return (
         <Box flexDirection="column">
           <Text bold color="claude">Showboard</Text>
-          <Text dimColor>{s.online ? 'No boards yet. Ask Claude to show you something.' : `Waiting for Showboard at ${s.url}.`}</Text>
-          {s.online ? null : <Text dimColor>It starts with Claude Code once this folder has it (showboard init), or with showboard serve.</Text>}
+          <Text dimColor>{s.online ? 'No boards yet. Ask Claude to show you something.' : candidates.length ? 'Waiting for Showboard.' : `Waiting for Showboard at ${s.url}.`}</Text>
+          {s.online ? null : <Text dimColor>{candidates.length ? 'It starts once its Data is set (/plugin, Showboard, Configure options), or once this folder has it (showboard init).' : 'It starts with Claude Code once this folder has it (showboard init), or with showboard serve.'}</Text>}
         </Box>
       )
     }
@@ -116,7 +125,8 @@ async function poll($: EngineInterface, announce: boolean, now = false): Promise
     const s = (await $.state.get({ plugin: 'showboard', key: 'pane' })).value ?? INITIAL
     const health: Health | null = await getJson($, `${s.url}/health?pane=claude-code`)
     if (!health?.ok) {
-      if (s.online) await update($, pane, p => ({ ...p, online: false }))
+      const other = candidates.find(c => c !== s.url)
+      if (s.online || other) await update($, pane, p => ({ ...p, online: false, ...(other ? { url: other, shows: -1 } : {}) }))
       return
     }
     const format = s.online && s.format ? s.format : await readFormat($, s.url)
@@ -189,10 +199,10 @@ async function readFormat($: EngineInterface, url: string): Promise<ShowboardPan
 /** Where this folder's Showboard answers, from the server .mcp.json starts. */
 async function fromMcpJson($: EngineInterface): Promise<string | null> {
   try {
-    const config = JSON.parse(await $.fs.read('.mcp.json')) as { mcpServers?: Record<string, { args?: string[] }> }
+    const config = JSON.parse(await $.fs.read('.mcp.json')) as { mcpServers?: Record<string, { command?: string; args?: string[] }> }
     for (const [name, server] of Object.entries(config.mcpServers ?? {})) {
       const args = server.args ?? []
-      if (name !== 'showboard' && !args.some(a => a.includes('showboard'))) continue
+      if (name !== 'showboard' && ![server.command ?? '', ...args].some(a => a.includes('showboard'))) continue
       const flag = (f: string) => {
         const i = args.indexOf(f)
         return i >= 0 ? args[i + 1] : undefined

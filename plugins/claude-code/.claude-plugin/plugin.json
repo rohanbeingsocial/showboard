@@ -1,8 +1,8 @@
 {
   "name": "showboard",
   "displayName": "Showboard",
-  "version": "0.1.1",
-  "description": "Showboard's boards in a pane beside the chat: charts, tables and notes drawn as text, updated as Claude draws them.",
+  "version": "0.2.0",
+  "description": "Claude answers questions about your spreadsheets or database with charts, tables and notes, in a pane beside the chat and on a board page in your browser. Read-only, and it runs on your computer.",
   "author": { "name": "Rohan", "url": "https://github.com/rohanbeingsocial" },
   "license": "MIT",
   "repository": "https://github.com/rohanbeingsocial/showboard",
@@ -13,10 +13,22 @@
   "privacyPolicyUrl": "https://github.com/rohanbeingsocial/showboard/blob/main/plugins/claude-code/README.md#privacy",
   "types": "./types/index.d.ts",
   "userConfig": {
+    "data": {
+      "type": "string",
+      "title": "Data",
+      "description": "The full path of a folder of spreadsheets (.xlsx, .csv), one spreadsheet, or a SQLite file. Only read, never changed. Empty: Showboard waits until you set it.",
+      "default": ""
+    },
+    "database_url": {
+      "type": "string",
+      "title": "Database URL",
+      "description": "A Postgres URL, such as postgres://reader:secret@localhost:5432/shop, used instead of Data. Give it a user that can only read.",
+      "sensitive": true
+    },
     "url": {
       "type": "string",
       "title": "Showboard URL",
-      "description": "Where Showboard answers, such as http://127.0.0.1:4710 or an app's http://127.0.0.1:3000/api/showboard. Empty: read from this folder's .mcp.json, else port 4710.",
+      "description": "Where the pane looks for Showboard, such as an app's http://127.0.0.1:3000/api/showboard. Empty: this folder's .mcp.json, else the plugin's own Showboard.",
       "default": ""
     }
   }

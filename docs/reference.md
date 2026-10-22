@@ -347,6 +347,7 @@ Boards go to every open tab and every pane. Actions go to the tab the user looke
 showboard serve --db <postgres-url | file.sqlite> | <files or folders...>  [--port 4710] [--boards .showboard/boards]
 showboard mcp   --db <...> | <files or folders...>  [--port 4710] [--boards .showboard/boards] [--root <folder>]
 showboard mcp   --url <http://localhost:3000/showboard>
+showboard mcp   --plugin  [--port 4711] [--boards <folder>]
 showboard init  [--db <...> | <files or folders...> | --url <...>]  [--agent <names>] [--port 4710] [--agent-model sonnet]
 showboard pane  [--url <http://127.0.0.1:4710>] [--once] [--currency INR --locale en-IN]
 showboard doctor [--agent <names>] [--json]
@@ -358,6 +359,7 @@ showboard guide
 | `serve` | Serves the tools, the browser bridge and the board page on http://localhost:4710 as a process of its own. `mcp` joins it when it is running |
 | `mcp` | The MCP server your agent starts (over stdin and stdout). It also serves the bridge and the board page, or joins a Showboard already serving on that port |
 | `mcp --url` | Only forwards to the Showboard your own server mounts |
+| `mcp --plugin` | How the [Claude Code plugin](#the-claude-code-plugin) starts Showboard: the data comes from `SHOWBOARD_DB` or `SHOWBOARD_DATA`. In a folder whose `.mcp.json` starts a Showboard of its own (a server named `showboard`, or one whose command or arguments name it), it lists no tools, so Claude does not see each tool twice. With no data set, it lists none either, and its instructions tell Claude how the person sets it up |
 | `init` | Adds a `showboard` server to each agent's settings in this folder ([below](#init-for-each-agent)), and for Claude Code writes `.claude/agents/board-builder.md` unless one exists |
 | `pane` | The board on screen, drawn as text in this terminal, following each new board ([below](#panes)) |
 | `doctor` | Checks this folder's setup as each agent will meet it. It reads each agent's settings and starts each Showboard entry there with the same command and folder. Then it makes the agent's first MCP calls (`initialize`, `tools/list`, `describe_data`) and reports the tools and tables, or what failed with a fix. Entries that forward to an app (`--url`) need the app running. Exits 1 while anything must be fixed; `--json` prints `{ ok, root, checks: [{ check, status, detail, fix? }], next }`. `--agent` checks only the agents named |
@@ -366,6 +368,7 @@ showboard guide
 | Option | Default | What it does |
 |---|---|---|
 | `--db` | `$SHOWBOARD_DB` | A Postgres URL or a SQLite file |
+| `--plugin` | | `mcp` as the Claude Code plugin runs it ([above](#command-line)) |
 | `<files>`, `--file` | | Spreadsheets, or folders of them (`--file` can repeat) |
 | `--url` | | The Showboard your app mounts, for `mcp`, `init` and `pane` |
 | `--port` | `4710` | Port for the bridge and the board page, on 127.0.0.1 |
@@ -378,7 +381,7 @@ showboard guide
 | `-h`, `--help` | | Prints the usage |
 | `-v`, `--version` | | Prints the version |
 
-`SHOWBOARD_DB` is read when neither `--db` nor files are given, so a password can stay out of the settings files. `BHARATCODE_API_KEY` (or `SHOWBOARD_ASK_KEY`) adds a question box to the board page of `serve` and `mcp`, for asking without a coding agent: Showboard sends the question and its own tools to BharatCode's model (`qwen-3.8-27b`), runs the tools it calls, and the board appears on the page. `SHOWBOARD_ASK_URL` and `SHOWBOARD_ASK_MODEL` point it at another OpenAI-compatible Responses API. The key stays on the server. Installed from npm, `init` writes each entry as `npx -y showboard …` (`cmd /c npx -y showboard …` on Windows, where most agents cannot start `npx` directly); run from a built checkout of this repository, it writes `node <that checkout>/packages/showboard/dist/cli/main.js …` instead.
+`SHOWBOARD_DB` is read when neither `--db` nor files are given, so a password can stay out of the settings files. After it comes `SHOWBOARD_DATA`: a spreadsheet, a folder of them, or a SQLite file (`.sqlite`, `.sqlite3`, `.db`, `.db3`) or Postgres URL, which open as `--db` would. An empty variable, or one holding an unfilled `${…}` placeholder, counts as unset. `init` writes only what its command line names, never these variables. `BHARATCODE_API_KEY` (or `SHOWBOARD_ASK_KEY`) adds a question box to the board page of `serve` and `mcp`, for asking without a coding agent: Showboard sends the question and its own tools to BharatCode's model (`qwen-3.8-27b`), runs the tools it calls, and the board appears on the page. `SHOWBOARD_ASK_URL` and `SHOWBOARD_ASK_MODEL` point it at another OpenAI-compatible Responses API. The key stays on the server. Installed from npm, `init` writes each entry as `npx -y showboard …` (`cmd /c npx -y showboard …` on Windows, where most agents cannot start `npx` directly); run from a built checkout of this repository, it writes `node <that checkout>/packages/showboard/dist/cli/main.js …` instead.
 
 ### init for each agent
 
@@ -402,7 +405,19 @@ A pane only watches: it gets every board shown, from any agent, and is never ask
 
 **In a terminal**, `showboard pane` holds `GET /stream?pane=<id>` open and redraws on each board. Keys: <kbd>←</kbd> <kbd>→</kbd> older and newer saved boards, <kbd>↑</kbd> <kbd>↓</kbd> <kbd>PgUp</kbd> <kbd>PgDn</kbd> scroll, <kbd>s</kbd> sources, <kbd>1</kbd>–<kbd>9</kbd> the board's buttons (run through `ui_act` in the browser tab), <kbd>o</kbd> open the board page, <kbd>q</kbd> quit. Numbers print in the format `describe_data` reports, or `--currency` and `--locale`.
 
-**Beside Claude Code's chat**, the mod in [plugins/claude-code](../plugins/claude-code) polls `GET /health?pane=claude-code` every two seconds, and at once after a `draw`, `recipe` or `show_board` call, then fetches the board when `shows` moves. It finds Showboard from the folder's `.mcp.json` (the `showboard` entry's `--url` or `--port`), or from its `url` setting. It installs with `/plugin install showboard --marketplace rohanbeingsocial/showboard`, through the repository's `.claude-plugin/marketplace.json`.
+**Beside Claude Code's chat**, the mod in [plugins/claude-code](../plugins/claude-code) polls `GET /health?pane=claude-code` every two seconds, and at once after a `draw`, `recipe` or `show_board` call, then fetches the board when `shows` moves. It finds Showboard from its `url` setting, else the folder's `.mcp.json` (the `showboard` entry's `--url` or `--port`), else it tries the plugin's own server on port 4711 and `showboard serve` on 4710 in turn until one answers.
+
+### The Claude Code plugin
+
+The plugin in [plugins/claude-code](../plugins/claude-code) is the pane plus a Showboard of its own. It installs with `/plugin install showboard --marketplace rohanbeingsocial/showboard`, through the repository's `.claude-plugin/marketplace.json`. Its `.mcp.json` starts `npx -y showboard@<version> mcp --plugin --port 4711 --boards ${CLAUDE_PLUGIN_DATA}/boards`, with these options from the plugin's settings (`/plugin`, Showboard, Configure options):
+
+| Option | Passed as | What it is |
+|---|---|---|
+| Data (`data`) | `SHOWBOARD_DATA` | A folder of spreadsheets, one spreadsheet or a SQLite file, as a full path |
+| Database URL (`database_url`) | `SHOWBOARD_DB` | A Postgres URL, kept in the system's credential store. Used instead of Data |
+| Showboard URL (`url`) | | Where the pane looks, for an app that mounts Showboard |
+
+The options belong to the person, not a project, so every Claude Code session on the machine serves the same data and shares one server on port 4711, with boards saved in the plugin's data folder. The port differs from `init`'s 4710 so that a project's own server never joins the plugin's, or the plugin's a project's: either would answer with the other's data. In a project that ran `init`, the plugin's server lists no tools and the project's own serves. Claude names the plugin's tools `mcp__plugin_showboard_showboard__<tool>`.
 
 **Your own pane** can use the same drawing: `boardToText(board, { width, format?, sources?, tableRows?, chartRows? })` from `showboard/text` returns blocks of lines, each line a list of runs (`text`, and optionally `ink`, `bold`, `dim`), plus the board's buttons as `{ kind: "action", label, action, input }`. `ink` names a series color (`s1`…`s8`) or a tone (`accent`, `muted`, `good`, `bad`, `warn`, `info`); `INKS` maps them to hex. Every line fits in `width` cells.
 

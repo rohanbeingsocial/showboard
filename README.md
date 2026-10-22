@@ -67,6 +67,16 @@ To be fair to the other side: the pages Claude wrote on its own were more design
 
 You need Node.js 22.13 or later and a coding agent. The demo uses Claude Code. Showboard is on npm as [`showboard`](https://www.npmjs.com/package/showboard).
 
+### Claude Code: install the plugin
+
+At the prompt of a Claude Code terminal session:
+
+```text
+/plugin install showboard --marketplace rohanbeingsocial/showboard
+```
+
+When it asks, set **Data** to a folder of spreadsheets, one spreadsheet or a SQLite file (or **Database URL** to a Postgres URL), then ask Claude about your data. Boards appear in a pane beside the chat and at http://localhost:4711, in every project. A project where you ran `showboard init` keeps its own. See [plugins/claude-code](plugins/claude-code).
+
 ### Let your agent set it up
 
 In your project, ask your coding agent:
@@ -173,7 +183,7 @@ npx showboard pane --url http://localhost:3000/showboard   # one your app mounts
 
 Lines become braille, bars become blocks, shares become one stacked bar with a legend, and tables, notes and headline numbers print as they are, every figure read from the board's data. Keys: <kbd>←</kbd> <kbd>→</kbd> older and newer boards, <kbd>s</kbd> sources, <kbd>1</kbd>–<kbd>9</kbd> the board's buttons (they run in your app), <kbd>o</kbd> the browser, <kbd>q</kbd> quit. `--once` prints the board and exits.
 
-In Claude Code, the same view sits beside the chat as a mod: [plugins/claude-code](plugins/claude-code). It opens by itself when a board arrives and the terminal has room, and `/board` opens it anywhere. Install it at the prompt of a Claude Code terminal session:
+In Claude Code, the same view sits beside the chat: the [plugin](plugins/claude-code) brings it along with a Showboard of its own. It opens by itself when a board arrives and the terminal has room, and `/board` opens it anywhere. Install it at the prompt of a Claude Code terminal session:
 
 ```text
 /plugin install showboard --marketplace rohanbeingsocial/showboard
@@ -189,7 +199,7 @@ In Claude Code, the same view sits beside the chat as a mod: [plugins/claude-cod
 - **Messy spreadsheets welcome.** Title rows, "Total" rows, `N/A`, amounts typed as text and text dates are all handled.
 - **Your app, your components.** Boards can use your own React components and run your app's actions, and the agent can see what is on screen.
 - **Any MCP agent.** `showboard init --agent` writes the settings for Claude Code, Codex, OpenCode, BharatCode, Gemini CLI, Cursor, VS Code, Antigravity and Windsurf.
-- **A pane beside the terminal.** `showboard pane` for any agent, and a mod beside the chat in Claude Code.
+- **A pane beside the terminal.** `showboard pane` for any agent. In Claude Code, one plugin install brings the server and a pane beside the chat.
 - **A cheaper model for new boards.** In Claude Code, a `board-builder` agent on Sonnet builds new kinds of board in its own small context.
 - **No extra API key.** It runs on the agent you already use.
 
@@ -486,7 +496,7 @@ npm run demo
 | `packages/showboard/src/text` | Boards drawn as text, for the panes |
 | `packages/showboard/src/cli` | The `serve`, `mcp`, `init` and `pane` commands, and each agent's settings |
 | `packages/showboard/src/viewer` | Showboard's own board page |
-| `plugins/claude-code` | The Claude Code mod: the pane beside the chat, listed for `/plugin install` in `.claude-plugin/marketplace.json` |
+| `plugins/claude-code` | The Claude Code plugin: a Showboard server and the pane beside the chat, listed for `/plugin install` in `.claude-plugin/marketplace.json` |
 | `examples/` | The demo shop and the sample spreadsheets |
 | `bench/` | The cost benchmark |
 
