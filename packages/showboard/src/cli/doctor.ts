@@ -127,7 +127,7 @@ export async function runDoctor(options: DoctorOptions): Promise<DoctorReport> {
 
   if (report().ok) {
     for (const note of new Set(found.map((f) => f.agent.note))) next.push(note);
-    for (const port of ports) next.push(`Boards appear at http://localhost:${port} while the agent runs. Ask the person to open it in a browser, or to run this in a terminal beside the agent: ${self} pane${port === "4710" ? "" : ` --url http://127.0.0.1:${port}`}`);
+    for (const port of ports) next.push(`Boards appear at http://localhost:${port} while the agent runs. Ask the user to open it in a browser, or to run this in a terminal beside the agent: ${self} pane${port === "4710" ? "" : ` --url http://127.0.0.1:${port}`}`);
     for (const url of urls) next.push(`Boards appear on the app's page that renders <Board />, while the app runs, or in a terminal: ${self} pane --url ${url}`);
     next.push('To try it, ask the agent: "What is in my data? Draw me a board of it."');
   }
@@ -176,10 +176,15 @@ async function checkEntry(group: Found[], launch: Launch, root: string, self: st
     sources.length ? `${sources.length} app ${sources.length === 1 ? "source" : "sources"}` : "",
   ].filter(Boolean);
   const notes = database?.notes?.length ? ` Notes on the data: ${database.notes.slice(0, 3).join(" ")}` : "";
+  // Which currency amounts print in, so the agent need not open the files to know.
+  const currency = result.data?.format?.currency;
+  const money = currency
+    ? ` Amounts print as ${currency}${result.data?.format?.locale ? ` (${result.data.format.locale})` : ""}.`
+    : ` Amounts print as US dollars unless told otherwise (${url ? "format on createShowboard and ShowboardProvider" : "--currency and --locale on init"}).`;
   if (!tables.length && !sources.length) {
     return { check, status: "warn", detail: `${who}: Showboard starts, but finds no tables to read.${notes}`, fix: "Check the files, folder or --db the entry names; rerun init with the right ones." };
   }
-  return { check, status: "ok", detail: `${who}: Showboard starts and answers (${result.tools.length} tools). Data: ${data.join(", ")}.${notes}` };
+  return { check, status: "ok", detail: `${who}: Showboard starts and answers (${result.tools.length} tools). Data: ${data.join(", ")}.${money}${notes}` };
 }
 
 /** The fix for what a server that would not start said. */
@@ -199,6 +204,7 @@ export interface ProbeResult {
   /** describe_data's answer. */
   data?: {
     database: { kind: string; tables: { table: string; rows?: number }[]; notes?: string[] } | null;
+    format?: { currency?: string; locale?: string };
     sources?: { name: string }[];
   };
   error?: string;

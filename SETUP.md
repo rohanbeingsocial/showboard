@@ -33,7 +33,9 @@ Every path ends with `showboard init`, which writes the MCP server entry into ea
 showboard init <files or folders>        # e.g. showboard init data    or    showboard init "Sales 2026.xlsx" targets.csv
 ```
 
-Each sheet becomes a table you can query and join. Title rows, blank rows, "Total" rows, numbers typed as text and text dates are handled. Amounts print in the files' currency; when the files have no symbols, add `--currency INR --locale en-IN` (any ISO code). The files are only read, and they reload when saved.
+`init` takes the files as arguments and writes each into the entry as `--file`. Each sheet becomes a table you can query and join. Title rows, blank rows, "Total" rows, numbers typed as text and text dates are handled. The files are only read, and they reload when saved.
+
+Amounts print in the currency the files are written in (₹1,200 → rupees), and `doctor` reports the currency it found. If it found none, or the wrong one, rerun `init` with `--currency INR --locale en-IN` (any ISO code).
 
 ### B. A database
 
@@ -53,16 +55,16 @@ Three parts:
 - a page renders the boards;
 - the agents' settings point at the app.
 
-**1. Install** in the app: `npm install showboard zod`, and `pg` for Postgres. Showboard needs React 19 and zod 4; if npm reports a conflict with the app's React or zod, stop and tell the user. From a checkout, run `npm pack` in `<checkout>/packages/showboard` and install the `.tgz` it writes: `npm install <checkout>/packages/showboard/showboard-0.2.0.tgz zod`.
+**1. Install** in the app: `npm install showboard zod`, and `pg` for Postgres. Showboard needs React 19 and zod 4; if npm reports a conflict with the app's React or zod, stop and tell the user. From a checkout, run `npm pack` in `<checkout>/packages/showboard`. It writes `showboard-0.2.0.tgz` there (the checkout's git ignores it). Then, in the app: `npm install <checkout>/packages/showboard/showboard-0.2.0.tgz zod`.
 
 **2. Server.** Create one Showboard when the server starts and mount its handler at a path. The data comes from:
 - `db`: the app's database URL, or a SQLite file;
 - `files`: spreadsheets;
 - `sources`: rows the app computes. See [docs/reference.md](docs/reference.md#sources).
 
-`boardsDir` keeps boards across restarts. Add `.showboard/` to `.gitignore`: saved boards hold query results.
+`boardsDir` keeps boards across restarts.
 
-**Next.js (App Router).** No `next.config` change is needed.
+**Next.js (App Router).** No `next.config` change is needed. Put `lib/showboard.ts` at the project root, next to `app/` (in `src/lib/` if the app keeps its code in `src/`).
 
 ```ts
 // lib/showboard.ts
@@ -83,7 +85,7 @@ export function showboardHandler(): Promise<(req: Request) => Promise<Response>>
 
 ```ts
 // app/api/showboard/[...path]/route.ts
-import { showboardHandler } from "@/lib/showboard"; // or a relative path, without the @/ alias
+import { showboardHandler } from "@/lib/showboard"; // without "@/*" in tsconfig.json's paths: "../../../../lib/showboard"
 
 async function handle(req: Request): Promise<Response> {
   return (await showboardHandler())(req);
@@ -148,13 +150,14 @@ export default function BoardPage() {
 }
 ```
 
+- Link the page from the app's navigation, so the user can find it.
 - `url` is where the handler is mounted.
 - When the front end runs on its own dev server (Vite on :5173, the API on :3000), use the API's full URL: `url="http://localhost:3000/showboard"`. Any localhost origin is allowed.
 - To let the agent see and act on every page, put the provider in the app's root component instead, and pass `onBoard={() => navigate("/board")}` so a new board opens its page.
 - For the dark palette, pass `className="sb-dark"` to `<Board />`.
 - The app's own actions (`useShowboardAction`), screen state (`useShowboardState`) and components can follow later. See [docs/reference.md](docs/reference.md#browser).
 
-**4. Agent settings**, pointing at where the app mounts Showboard. Start the app before checking.
+**4. Agent settings**, pointing at where the app mounts Showboard. `init` only writes settings, so the app can be down; `doctor` needs it running.
 
 ```bash
 showboard init --url http://localhost:3000/api/showboard
@@ -185,10 +188,11 @@ Don't say it works inside the agent until the user has restarted it and a board 
 
 ## Things to get right
 
-- **Settings that start a checkout name a path on this machine.** Don't commit them for a team; entries written from an npm install (`npx -y showboard …`) are safe to share.
+- **Add `.showboard/` to `.gitignore`**, in every path, and create the file if there is none. Saved boards and the recipes you save live there, and boards hold query results.
+- **Settings that start a checkout name a path on this machine** (`.mcp.json` and the rest). Don't commit them for a team; entries written from an npm install (`npx -y showboard …`) are safe to share.
 - **One port per project.** Paths A and B serve on 4710. If another project already uses it, `doctor` says so: rerun `init` with `--port 4711` (or any free port) for every agent.
 - **Rerunning `init`** replaces Showboard's own entry and keeps the other servers in each settings file. A settings file with comments is left alone, and `init` prints the entry to add by hand.
-- **The board-builder agent.** For Claude Code, `init` also writes `.claude/agents/board-builder.md`, a cheaper model that builds new kinds of boards. Keep it.
+- **The board-builder agent.** For Claude Code, `init` also writes `.claude/agents/board-builder.md`. It builds new kinds of boards on Sonnet, a cheaper model, in a small context of its own (`--agent-model` on `init`, or `model:` in the file, changes it). Keep it.
 
 ## When something fails
 
