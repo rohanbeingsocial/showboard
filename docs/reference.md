@@ -378,7 +378,7 @@ showboard guide
 | `-h`, `--help` | | Prints the usage |
 | `-v`, `--version` | | Prints the version |
 
-`SHOWBOARD_DB` is read when neither `--db` nor files are given, so a password can stay out of the settings files. Installed from npm, `init` writes each entry as `npx -y showboard …` (`cmd /c npx -y showboard …` on Windows, where most agents cannot start `npx` directly); run from a built checkout of this repository, it writes `node <that checkout>/packages/showboard/dist/cli/main.js …` instead.
+`SHOWBOARD_DB` is read when neither `--db` nor files are given, so a password can stay out of the settings files. `BHARATCODE_API_KEY` (or `SHOWBOARD_ASK_KEY`) adds a question box to the board page of `serve` and `mcp`, for asking without a coding agent: Showboard sends the question and its own tools to BharatCode's model (`qwen-3.8-27b`), runs the tools it calls, and the board appears on the page. `SHOWBOARD_ASK_URL` and `SHOWBOARD_ASK_MODEL` point it at another OpenAI-compatible Responses API. The key stays on the server. Installed from npm, `init` writes each entry as `npx -y showboard …` (`cmd /c npx -y showboard …` on Windows, where most agents cannot start `npx` directly); run from a built checkout of this repository, it writes `node <that checkout>/packages/showboard/dist/cli/main.js …` instead.
 
 ### init for each agent
 

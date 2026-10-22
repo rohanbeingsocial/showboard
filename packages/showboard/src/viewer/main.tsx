@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { createRoot } from "react-dom/client";
+import { inline } from "../react/components/basic.js";
 import { Board, BoardList, ShowboardProvider, useShowboard } from "../react/index.js";
 import type { FormatOptions } from "../spec/format.js";
 import "../react/styles.css";
@@ -101,7 +102,7 @@ function Ask() {
           {state.busy ? "Drawing…" : "Ask"}
         </button>
       </div>
-      {state.answer ? <p className="sv-answer">{state.answer}</p> : null}
+      {state.answer ? <p className="sv-answer">{inline(state.answer)}</p> : null}
       {state.error ? <p className="sb-error">{state.error}</p> : null}
     </form>
   );

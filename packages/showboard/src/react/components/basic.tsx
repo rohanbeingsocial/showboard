@@ -108,7 +108,8 @@ function blocks(text: string): ReactNode[] {
   return out;
 }
 
-function inline(text: string): ReactNode {
+/** Text with **bold**; the board page's answers use it too. */
+export function inline(text: string): ReactNode {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => (part.startsWith("**") && part.endsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>));
 }
 

@@ -55,6 +55,7 @@ const HELP = `showboard: a pen for your coding agent, to draw, show and do in yo
   Spreadsheets: .xlsx, .xlsm, .csv and .tsv files, or folders of them (also --file <path>).
   Each sheet becomes a table your agent can query; the files are only read, and reloaded
   when they change. --db can also come from the SHOWBOARD_DB environment variable.
+  BHARATCODE_API_KEY adds a box to ask questions on the board page, with BharatCode's model.
 
   Amounts print in the currency the spreadsheets are written in (₹1,200 → rupees), or
   --currency INR (any ISO code) and --locale en-IN for how digits group.

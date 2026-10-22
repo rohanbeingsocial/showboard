@@ -42,6 +42,21 @@ BharatCode reads. `showboard doctor` starts Showboard the way BharatCode will
 and checks it answers.
 
 
+Or ask without a coding agent
+-----------------------------
+With a BharatCode API key (bharatcode.ai/account), Showboard's board page gets
+a question box. Showboard sends your question to Qwen 3.8 27B on the BharatCode
+model API, with its own tools to read your tables and draw; the board appears
+on the page, with a short answer above it.
+
+    PowerShell:  $env:BHARATCODE_API_KEY = "<your key>"
+    bash:        export BHARATCODE_API_KEY=<your key>
+    npx -y showboard serve "Sales 2026.xlsx"
+
+Open http://localhost:4710 and ask, e.g. "Which region sold the most this
+year?" The key stays on your machine: only the local server uses it.
+
+
 Needs
 -----
 Node.js 22.13 or later, and a BharatCode account with model access
