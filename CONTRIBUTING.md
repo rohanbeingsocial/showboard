@@ -2,7 +2,7 @@
 
 Thanks for helping. Showboard is built with AI assistance, mostly from Claude Code, and AI-assisted pull requests are welcome. What matters is that you have read the change and the tests pass. Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-Looking for somewhere to start? Try an issue labelled [good first issue](https://github.com/rohanbeingsocial/showboard/labels/good%20first%20issue). Questions are welcome in [Discussions](https://github.com/rohanbeingsocial/showboard/discussions).
+Looking for somewhere to start? Try an issue labelled [help wanted](https://github.com/rohanbeingsocial/showboard/labels/help%20wanted). Questions are welcome in [Discussions](https://github.com/rohanbeingsocial/showboard/discussions).
 
 ## Set up
 
