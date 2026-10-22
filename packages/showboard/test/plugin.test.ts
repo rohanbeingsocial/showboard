@@ -2,7 +2,7 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { pluginIdle, projectHasShowboard, SETUP_INSTRUCTIONS } from "../src/cli/plugin.js";
+import { pluginBoardsDir, pluginIdle, projectHasShowboard, SETUP_INSTRUCTIONS } from "../src/cli/plugin.js";
 
 const folder = (mcpJson?: string) => {
   const root = mkdtempSync(join(tmpdir(), "showboard-plugin-"));
@@ -30,6 +30,12 @@ describe("the plugin's server", () => {
     expect(pluginIdle("claude-code", own, false)).toEqual({ instructions: "" });
     expect(pluginIdle("claude-code", folder(), false)).toEqual({ instructions: SETUP_INSTRUCTIONS["claude-code"] });
     expect(pluginIdle("claude-code", folder(), true)).toBeNull();
+  });
+
+  it("keeps boards in the plugin's data folder, else in the home folder", () => {
+    expect(pluginBoardsDir("claude-code", { CLAUDE_PLUGIN_DATA: join("/data", "showboard-showboard") }, "/home/r")).toBe(join("/data", "showboard-showboard", "boards"));
+    expect(pluginBoardsDir("claude-code", { CLAUDE_PLUGIN_DATA: " " }, "/home/r")).toBe(join("/home/r", ".showboard", "claude-code", "boards"));
+    expect(pluginBoardsDir("claude-desktop", {}, "/home/r")).toBe(join("/home/r", ".showboard", "claude-desktop", "boards"));
   });
 
   it("tells each app's person where its own settings are", () => {

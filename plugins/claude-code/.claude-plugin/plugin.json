@@ -1,7 +1,7 @@
 {
   "name": "showboard",
   "displayName": "Showboard",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Claude answers questions about your spreadsheets or database with charts, tables and notes, in a pane beside the chat and on a board page in your browser. Read-only, and it runs on your computer.",
   "author": { "name": "Rohan", "url": "https://github.com/rohanbeingsocial" },
   "license": "MIT",

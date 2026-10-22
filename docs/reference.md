@@ -372,7 +372,7 @@ showboard guide
 | `<files>`, `--file` | | Spreadsheets, or folders of them (`--file` can repeat) |
 | `--url` | | The Showboard your app mounts, for `mcp`, `init` and `pane` |
 | `--port` | `4710` | Port for the bridge and the board page, on 127.0.0.1 |
-| `--boards` | `.showboard/boards` | Folder for saved boards. The agent's recipes go next to it, in `.showboard/recipes` |
+| `--boards` | `.showboard/boards` | Folder for saved boards. The agent's recipes go next to it, in `.showboard/recipes`. With `--plugin`: the plugin's data folder (`$CLAUDE_PLUGIN_DATA/boards`), else `~/.showboard/<app>/boards`. A plugin can't pass the folder itself: Anthropic's plugin directory refuses a server command whose paths use any variable but `${CLAUDE_PLUGIN_ROOT}` |
 | `--root` | the current folder | The project folder, for agents that start servers somewhere else; relative paths resolve from it |
 | `--agent` | Claude Code, plus agents with settings here | Agents for `init`, comma separated: `claude`, `codex`, `opencode`, `bharatcode`, `gemini`, `cursor`, `vscode`, `antigravity`, `windsurf`, or `all` (every one but the user-wide `antigravity` and `windsurf`) |
 | `--currency`, `--locale` | read from the files | How amounts print, e.g. `--currency INR --locale en-IN` |
@@ -409,7 +409,7 @@ A pane only watches: it gets every board shown, from any agent, and is never ask
 
 ### The Claude Code plugin
 
-The plugin in [plugins/claude-code](../plugins/claude-code) is the pane plus a Showboard of its own. It installs with `/plugin install showboard --marketplace rohanbeingsocial/showboard`, through the repository's `.claude-plugin/marketplace.json`. Its `.mcp.json` starts `npx -y showboard@<version> mcp --plugin claude-code --port 4711 --boards ${CLAUDE_PLUGIN_DATA}/boards`, with these options from the plugin's settings (`/plugin`, Showboard, Configure options):
+The plugin in [plugins/claude-code](../plugins/claude-code) is the pane plus a Showboard of its own. It installs with `/plugin install showboard --marketplace rohanbeingsocial/showboard`, through the repository's `.claude-plugin/marketplace.json`. Its `.mcp.json` starts `npx -y showboard@<version> mcp --plugin claude-code --port 4711`, with these options from the plugin's settings (`/plugin`, Showboard, Configure options):
 
 | Option | Passed as | What it is |
 |---|---|---|
@@ -421,7 +421,7 @@ The options belong to the person, not a project, so every Claude Code session on
 
 ### The Claude desktop extension
 
-[plugins/claude-desktop](../plugins/claude-desktop) builds `showboard-<version>.mcpb`, a desktop extension: `manifest.json`, the icon, and Showboard with its runtime dependencies (`node plugins/claude-desktop/build.mjs`). The desktop app runs `node <extension>/node_modules/showboard/dist/cli/main.js mcp --plugin claude-desktop --port 4712 --boards ~/.showboard/claude-desktop/boards` on the Node.js it ships with, with two options:
+[plugins/claude-desktop](../plugins/claude-desktop) builds `showboard-<version>.mcpb`, a desktop extension: `manifest.json`, the icon, and Showboard with its runtime dependencies (`node plugins/claude-desktop/build.mjs`). The desktop app runs `node <extension>/node_modules/showboard/dist/cli/main.js mcp --plugin claude-desktop --port 4712` on the Node.js it ships with, saving boards in `~/.showboard/claude-desktop/boards`, with two options:
 
 | Option | Passed as | What it is |
 |---|---|---|

@@ -3,7 +3,7 @@
   "manifest_version": "0.3",
   "name": "showboard",
   "display_name": "Showboard",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Ask about your spreadsheets or database, and Claude answers with a board of charts, tables and notes in your browser. Read-only, and it runs on your computer.",
   "long_description": "Showboard gives Claude a pen for your data. Point it at a folder of spreadsheets (.xlsx, .csv), a SQLite file or a Postgres database, then ask a question such as \"Show me revenue by month.\" Claude queries the data, read-only, and draws the answer as a board: headline numbers, line and bar charts, tables and notes, every figure from a query you can inspect. Boards open at http://localhost:4712 and are saved there, newest first.\n\nYour data stays on your computer: Showboard only reads it, serves boards on localhost, and contacts no host but your own database. Spreadsheets reload when you save them, and messy ones are fine: title rows, Total rows, N/A and amounts typed as text are handled.",
   "author": {
@@ -23,7 +23,7 @@
     "entry_point": "node_modules/showboard/dist/cli/main.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/node_modules/showboard/dist/cli/main.js", "mcp", "--plugin", "claude-desktop", "--port", "4712", "--boards", "${HOME}/.showboard/claude-desktop/boards"],
+      "args": ["${__dirname}/node_modules/showboard/dist/cli/main.js", "mcp", "--plugin", "claude-desktop", "--port", "4712"],
       "env": {
         "SHOWBOARD_DATA": "${user_config.folder}",
         "SHOWBOARD_DB": "${user_config.database}"

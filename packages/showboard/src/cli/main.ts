@@ -10,7 +10,7 @@ import { AGENTS, agentNames, pickAgents, writeAgent, type Launch } from "./agent
 import { formatReport, nodeHasSqlite, runDoctor, shellArg } from "./doctor.js";
 import { remoteBackend, runMcp, type ToolBackend } from "./mcp.js";
 import { runPane } from "./pane.js";
-import { noTools, PLUGIN_HOSTS, pluginIdle, type PluginHost } from "./plugin.js";
+import { noTools, PLUGIN_HOSTS, pluginBoardsDir, pluginIdle, type PluginHost } from "./plugin.js";
 
 const HELP = `showboard: a pen for your coding agent, to draw, show and do in your app
 
@@ -77,7 +77,7 @@ const { positionals, values } = parseArguments({
     file: { type: "string", multiple: true },
     url: { type: "string" },
     port: { type: "string", default: "4710" },
-    boards: { type: "string", default: ".showboard/boards" },
+    boards: { type: "string" },
     root: { type: "string" },
     agent: { type: "string", multiple: true },
     "agent-model": { type: "string", default: "sonnet" },
@@ -123,7 +123,8 @@ async function start(): Promise<Showboard> {
     throw new Error(`Showboard needs Node.js 22.13 or later to read spreadsheets and SQLite files; this is ${process.version}. Install a newer Node.js (https://nodejs.org), then start your agent again.`);
   }
   const format = { ...(values.currency ? { currency: values.currency.toUpperCase() } : {}), ...(values.locale ? { locale: values.locale } : {}) };
-  return createShowboard({ db, files, boardsDir: values.boards, openHint, format });
+  const boardsDir = values.boards ?? (values.plugin ? pluginBoardsDir(values.plugin as PluginHost) : ".showboard/boards");
+  return createShowboard({ db, files, boardsDir, openHint, format });
 }
 
 async function isShowboardAt(url: string): Promise<boolean> {

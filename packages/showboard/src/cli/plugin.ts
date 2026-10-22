@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { join } from "node:path";
 import type { ToolBackend } from "./mcp.js";
 
@@ -27,6 +28,17 @@ export const SETUP_INSTRUCTIONS: Record<PluginHost, string> = {
     "open Settings, then Extensions, click Showboard, and choose a Spreadsheet folder (.xlsx, .csv), " +
     "or give a Database: a Postgres URL or the full path of a SQLite file.",
 };
+
+/**
+ * Where the plugin's server keeps its boards unless --boards says: the data folder Claude Code
+ * gives each plugin (CLAUDE_PLUGIN_DATA, in the server's environment), else one in the home
+ * folder. It stays off the command line because Anthropic's plugin directory refuses a server
+ * command whose paths use any variable but ${CLAUDE_PLUGIN_ROOT}.
+ */
+export function pluginBoardsDir(host: PluginHost, env: NodeJS.ProcessEnv = process.env, home = homedir()): string {
+  const data = env.CLAUDE_PLUGIN_DATA?.trim();
+  return data ? join(data, "boards") : join(home, ".showboard", host, "boards");
+}
 
 /** Whether the folder's .mcp.json starts a Showboard of its own: one named showboard, or run by it. */
 export function projectHasShowboard(root: string): boolean {
