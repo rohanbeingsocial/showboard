@@ -1,0 +1,6 @@
+{
+  "name": "showboard",
+  "owner": { "name": "Rohan" },
+  "description": "Showboard for Claude Code: the boards your agent draws, in a pane beside the chat.",
+  "plugins": [{ "name": "showboard", "source": "./plugins/claude-code" }]
+}

@@ -203,7 +203,11 @@ npx showboard pane --url http://localhost:3000/showboard   # one your app mounts
 
 Lines become braille, bars become blocks, shares become one stacked bar with a legend, and tables, notes and headline numbers print as they are, every figure read from the board's data. Keys: <kbd>←</kbd> <kbd>→</kbd> older and newer boards, <kbd>s</kbd> sources, <kbd>1</kbd>–<kbd>9</kbd> the board's buttons (they run in your app), <kbd>o</kbd> the browser, <kbd>q</kbd> quit. `--once` prints the board and exits.
 
-In Claude Code, the same view sits beside the chat as a mod: [plugins/claude-code](plugins/claude-code). It opens by itself when a board arrives and the terminal has room, and `/board` opens it anywhere.
+In Claude Code, the same view sits beside the chat as a mod: [plugins/claude-code](plugins/claude-code). It opens by itself when a board arrives and the terminal has room, and `/board` opens it anywhere. Install it at the prompt of a Claude Code terminal session:
+
+```text
+/plugin install showboard --marketplace rohanbeingsocial/showboard
+```
 
 ## Examples
 
@@ -394,7 +398,7 @@ npm run demo
 | `packages/showboard/src/text` | Boards drawn as text, for the panes |
 | `packages/showboard/src/cli` | The `serve`, `mcp`, `init` and `pane` commands, and each agent's settings |
 | `packages/showboard/src/viewer` | Showboard's own board page |
-| `plugins/claude-code` | The Claude Code mod: the pane beside the chat |
+| `plugins/claude-code` | The Claude Code mod: the pane beside the chat, listed for `/plugin install` in `.claude-plugin/marketplace.json` |
 | `examples/` | The demo shop and the sample spreadsheets |
 | `bench/` | The cost benchmark |
 

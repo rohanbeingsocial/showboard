@@ -8,6 +8,18 @@ A Claude Code mod that keeps Showboard's boards in a pane beside the chat. Each 
 
 Other agents (Codex, OpenCode, Gemini CLI, …) get the same view from `showboard pane`, run in a terminal split beside them.
 
+## Install
+
+At the prompt of a Claude Code terminal session:
+
+```text
+/plugin install showboard --marketplace rohanbeingsocial/showboard
+```
+
+Answer `y` to add the marketplace, press Enter for the user scope, and leave the Showboard URL empty unless your app mounts Showboard somewhere else. From a shell, `claude plugin install showboard --marketplace rohanbeingsocial/showboard` does the same. In the desktop app, click **+** next to the prompt box, then **Plugins**, **Add marketplace** with `rohanbeingsocial/showboard`, then **Add plugin**.
+
+The repository is private: the install works for people who can read it on GitHub and whose computer already holds a git login for github.com (an SSH key, or `gh auth login` then `gh auth setup-git`). It never asks for one.
+
 ## Developing it
 
 ```bash
