@@ -83,6 +83,18 @@ describe("doctor", () => {
     writeFileSync(join(root, "opencode.json"), '{"mcp":{}}');
     const partial = await runDoctor({ root, home, self: "showboard", timeoutMs: 10_000 });
     expect(partial.checks.find((c) => c.check === "opencode")).toMatchObject({ status: "warn", fix: "showboard init --db gone.sqlite --agent opencode" });
+    // BharatCode reads the same opencode.json: one warning for the file, not two.
+    expect(partial.checks.filter((c) => c.detail.includes("opencode.json"))).toHaveLength(1);
+  });
+
+  it("checks a file two agents read once, naming both", async () => {
+    const { root, home, server } = project();
+    writeAgent(AGENTS.find((a) => a.name === "opencode")!, { command: process.execPath, args: [server, "mcp"] }, root, home);
+    const report = await runDoctor({ root, home, self: "showboard", timeoutMs: 10_000 });
+    expect(report.ok).toBe(true);
+    expect(report.checks.map((c) => c.check)).toEqual(["node", "opencode,bharatcode"]);
+    expect(report.checks[1]!.detail).toMatch(/^OpenCode, BharatCode \(opencode\.json\): /);
+    expect(report.next.some((n) => n.includes("bharatcode mcp list"))).toBe(true);
   });
 
   it("leaves user-wide settings for other folders alone", async () => {

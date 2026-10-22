@@ -25,7 +25,7 @@ Look at the project before asking anything. Take the first row that fits.
 
 Ask only when the choice matters to the user. For example, an app plus "I just want answers about my data": B is quicker and changes none of their code, so recommend B unless they want boards inside the app. With React 18 or older, C is out: use B and tell the user why.
 
-Every path ends with `showboard init`, which writes the MCP server entry into each coding agent's settings in this folder. With no `--agent`, it sets up Claude Code plus any agent the folder already has settings for. To name agents, pass `--agent claude,codex,opencode,gemini,cursor,vscode`, or `all`. The user-wide `antigravity` and `windsurf` are written only when named.
+Every path ends with `showboard init`, which writes the MCP server entry into each coding agent's settings in this folder. With no `--agent`, it sets up Claude Code plus any agent the folder already has settings for. To name agents, pass `--agent claude,codex,opencode,bharatcode,gemini,cursor,vscode`, or `all`. OpenCode and BharatCode (a fork of OpenCode) read the same `opencode.json`, so one entry serves both. The user-wide `antigravity` and `windsurf` are written only when named.
 
 ### A. Spreadsheets
 
@@ -178,7 +178,7 @@ showboard doctor            # add --json to read the report in code
 ## 4. Tell the user
 
 Pass on what `doctor` prints under **Next**:
-1. **Restart the agent in this folder.** Claude Code asks to approve the `showboard` server; Codex and Gemini CLI read project settings only in a folder the user trusts.
+1. **Restart the agent in this folder.** Claude Code asks to approve the `showboard` server; Codex and Gemini CLI read project settings only in a folder the user trusts; BharatCode needs the user signed in (`bharatcode auth login`).
 2. **Where boards appear:**
    - Paths A and B: at http://localhost:4710 (or the `--port` given), or in a terminal beside the agent with `showboard pane`.
    - Path C: on the page with `<Board />`.

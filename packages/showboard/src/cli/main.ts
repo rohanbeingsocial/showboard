@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseArgs } from "node:util";
+import { parseArgs, type ParseArgsConfig } from "node:util";
 import { builderAgent, createShowboard, INSTRUCTIONS, serve, type Showboard } from "../server/index.js";
-import { agentNames, pickAgents, writeAgent, type Launch } from "./agents.js";
+import { AGENTS, agentNames, pickAgents, writeAgent, type Launch } from "./agents.js";
 import { formatReport, nodeHasSqlite, runDoctor, shellArg } from "./doctor.js";
 import { remoteBackend, runMcp, type ToolBackend } from "./mcp.js";
 import { runPane } from "./pane.js";
@@ -40,6 +41,9 @@ const HELP = `showboard: a pen for your coding agent, to draw, show and do in yo
       Step-by-step setup instructions for a coding agent: which path fits the project, the
       commands, your app's server code for Next.js, Express, Hono or node:http, and checks.
 
+  showboard --version
+      The version of Showboard this is.
+
   showboard init [--db <...> | <files...> | --url <...>] [--agent <names>] [--port 4710]
       Add Showboard to your coding agents in this folder. --agent names them, comma
       separated: ${agentNames.join(", ")}, or all (every one but the
@@ -55,7 +59,9 @@ const HELP = `showboard: a pen for your coding agent, to draw, show and do in yo
   --currency INR (any ISO code) and --locale en-IN for how digits group.
 `;
 
-const { positionals, values } = parseArgs({
+const VERSION = (JSON.parse(readFileSync(fileURLToPath(new URL("../../package.json", import.meta.url)), "utf8")) as { version: string }).version;
+
+const { positionals, values } = parseArguments({
   allowPositionals: true,
   options: {
     db: { type: "string" },
@@ -71,8 +77,18 @@ const { positionals, values } = parseArgs({
     once: { type: "boolean" },
     json: { type: "boolean" },
     help: { type: "boolean", short: "h" },
+    version: { type: "boolean", short: "v" },
   },
 });
+
+function parseArguments<const T extends ParseArgsConfig>(config: T) {
+  try {
+    return parseArgs(config);
+  } catch (err) {
+    console.error(`showboard: ${(err as Error).message.replace(/. To specify a positional argument.*$/, ".")} See showboard --help.`);
+    process.exit(2);
+  }
+}
 const command = positionals[0];
 const port = Number(values.port);
 const files = [...(values.file ?? []), ...positionals.slice(1)];
@@ -114,6 +130,10 @@ function selfCommand(): string {
 }
 
 async function main(): Promise<void> {
+  if (values.version || command === "version") {
+    console.log(VERSION);
+    return;
+  }
   if (!command || values.help) {
     process.stdout.write(HELP);
     return;
@@ -183,7 +203,10 @@ async function main(): Promise<void> {
     const root = process.cwd();
     const agents = pickAgents(values.agent, root);
     const written: string[] = [];
+    const writtenFiles = new Set<string>();
     for (const agent of agents) {
+      // Agents that read the same file (BharatCode reads OpenCode's) share its one entry.
+      if (writtenFiles.has(agent.file(root, homedir()))) continue;
       const where = agent.root === "absolute" ? ["--root", root] : agent.root === "workspace-variable" ? ["--root", "${workspaceFolder}"] : [];
       const entry = launch(["mcp", ...where, ...args]);
       let file: string;
@@ -195,8 +218,13 @@ async function main(): Promise<void> {
         continue;
       }
       const shown = agent.userWide ? file : relative(root, file) || file;
+      writtenFiles.add(file);
       written.push(agent.name);
       console.log(`showboard: ${agent.label}: added to ${shown}. ${agent.note}`);
+      for (const other of AGENTS.filter((a) => a !== agent && a.file(root, homedir()) === file)) {
+        written.push(other.name);
+        console.log(`showboard: ${other.label} reads ${shown} too. ${other.note}`);
+      }
     }
     if (written.includes("claude")) {
       const agent = ".claude/agents/board-builder.md";

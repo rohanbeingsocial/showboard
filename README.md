@@ -180,7 +180,7 @@ In Claude Code, the same view sits beside the chat as a mod: [plugins/claude-cod
 - **Show sources.** Every chart, table and number can show the query behind it.
 - **Messy spreadsheets welcome.** Title rows, "Total" rows, `N/A`, amounts typed as text and text dates are all handled.
 - **Your app, your components.** Boards can use your own React components and run your app's actions, and the agent can see what is on screen.
-- **Any MCP agent.** `showboard init --agent` writes the settings for Claude Code, Codex, OpenCode, Gemini CLI, Cursor, VS Code, Antigravity and Windsurf.
+- **Any MCP agent.** `showboard init --agent` writes the settings for Claude Code, Codex, OpenCode, BharatCode, Gemini CLI, Cursor, VS Code, Antigravity and Windsurf.
 - **A pane beside the terminal.** `showboard pane` for any agent, and a mod beside the chat in Claude Code.
 - **A cheaper model for new boards.** In Claude Code, a `board-builder` agent on Sonnet builds new kinds of board in its own small context.
 - **No extra API key.** It runs on the agent you already use.
@@ -194,6 +194,7 @@ Showboard is an MCP server, so any coding agent that speaks MCP can use it. `sho
 | Claude Code | `.mcp.json` | Approve the server when Claude Code first asks. Also gets the `board-builder` agent. |
 | Codex | `.codex/config.toml` | Codex reads it only in a trusted project. |
 | OpenCode | `opencode.json` | `opencode mcp list` shows it connected. |
+| BharatCode | `opencode.json` | A fork of OpenCode, so it reads the same entry. Sign in with `bharatcode auth login`; `bharatcode mcp list` shows it connected. |
 | Gemini CLI | `.gemini/settings.json` | Trust the folder when Gemini CLI asks; `gemini mcp list` shows it connected. |
 | Cursor | `.cursor/mcp.json` | Names the project folder with `--root`, since Cursor starts servers elsewhere. |
 | VS Code | `.vscode/mcp.json` | Uses `${workspaceFolder}`; start it under MCP Servers, then use agent mode. |
@@ -444,14 +445,14 @@ No. Every query is read-only, and in your app the agent can run only the actions
 
 <br />
 
-Yes, with any agent that speaks MCP. `showboard init --agent` writes the settings for Codex, OpenCode, Gemini CLI, Cursor, VS Code, Antigravity and Windsurf. Claude Code is the one tested end to end so far; see [Works with your agent](#works-with-your-agent).
+Yes, with any agent that speaks MCP. `showboard init --agent` writes the settings for Codex, OpenCode, BharatCode, Gemini CLI, Cursor, VS Code, Antigravity and Windsurf. Claude Code is the one tested end to end so far; see [Works with your agent](#works-with-your-agent).
 
 </details>
 
 ## Roadmap
 
 - [x] A pane beside the terminal: `showboard pane` for any agent, and a Claude Code mod
-- [x] Settings for Codex, OpenCode, Gemini CLI, Cursor, VS Code, Antigravity and Windsurf
+- [x] Settings for Codex, OpenCode, BharatCode, Gemini CLI, Cursor, VS Code, Antigravity and Windsurf
 - [x] Publish to npm
 - [ ] A leaner launch that trims Claude Code's fixed prompt, the biggest share of what a board costs
 - [ ] A `board-builder` agent for the agents besides Claude Code that have subagents

@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 // start servers in it; Cursor does not, and the user-wide files (Antigravity, Windsurf)
 // serve every project, so those name the project folder with --root.
 
-export type AgentName = "claude" | "codex" | "opencode" | "gemini" | "cursor" | "vscode" | "antigravity" | "windsurf";
+export type AgentName = "claude" | "codex" | "opencode" | "bharatcode" | "gemini" | "cursor" | "vscode" | "antigravity" | "windsurf";
 
 /** How the agent starts Showboard: the command and its arguments. */
 export interface Launch {
@@ -59,6 +59,14 @@ function plainLaunch(entry: Record<string, unknown>): Launch | undefined {
   return typeof entry.command === "string" ? { command: entry.command, args: Array.isArray(entry.args) ? entry.args.map(String) : [] } : undefined;
 }
 
+// OpenCode's settings, which BharatCode (a fork of OpenCode) reads as well.
+const opencodeSettings = {
+  // Its settings may be opencode.jsonc instead; one with comments is left to the person.
+  file: (root: string) => join(root, here(root, "opencode.jsonc") && !here(root, "opencode.json") ? "opencode.jsonc" : "opencode.json"),
+  update: jsonServers("mcp", (launch) => ({ type: "local", command: [launch.command, ...launch.args], enabled: true, timeout: 30_000 }), { $schema: "https://opencode.ai/config.json" }),
+  read: jsonEntry("mcp", (entry) => (Array.isArray(entry.command) && entry.command.length ? { command: String(entry.command[0]), args: entry.command.slice(1).map(String) } : undefined)),
+};
+
 export const AGENTS: Agent[] = [
   {
     name: "claude",
@@ -83,12 +91,15 @@ export const AGENTS: Agent[] = [
   {
     name: "opencode",
     label: "OpenCode",
-    // Its settings may be opencode.jsonc instead; one with comments is left to the person.
-    file: (root) => join(root, here(root, "opencode.jsonc") && !here(root, "opencode.json") ? "opencode.jsonc" : "opencode.json"),
+    ...opencodeSettings,
     detect: (root) => here(root, "opencode.json") || here(root, "opencode.jsonc") || here(root, ".opencode"),
-    update: jsonServers("mcp", (launch) => ({ type: "local", command: [launch.command, ...launch.args], enabled: true, timeout: 30_000 }), { $schema: "https://opencode.ai/config.json" }),
-    read: jsonEntry("mcp", (entry) => (Array.isArray(entry.command) && entry.command.length ? { command: String(entry.command[0]), args: entry.command.slice(1).map(String) } : undefined)),
     note: "Restart OpenCode in this folder; `opencode mcp list` shows whether it connected.",
+  },
+  {
+    name: "bharatcode",
+    label: "BharatCode",
+    ...opencodeSettings,
+    note: "Restart BharatCode in this folder (`bharatcode .`, signed in with `bharatcode auth login`); `bharatcode mcp list` shows whether it connected.",
   },
   {
     name: "gemini",

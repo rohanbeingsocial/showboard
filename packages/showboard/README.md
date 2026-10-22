@@ -32,7 +32,7 @@ npx showboard init --db ./shop.sqlite        # or a Postgres URL (or set SHOWBOA
 npx showboard doctor                         # checks the setup
 ```
 
-Restart your agent in that folder, then open http://localhost:4710, or run `npx showboard pane` in a terminal beside the agent. `init` writes the settings for Claude Code, plus any agent the folder already has settings for. To name others, pass `--agent codex,opencode,gemini,cursor,vscode` (or `all`).
+Restart your agent in that folder, then open http://localhost:4710, or run `npx showboard pane` in a terminal beside the agent. `init` writes the settings for Claude Code, plus any agent the folder already has settings for. To name others, pass `--agent codex,opencode,bharatcode,gemini,cursor,vscode` (or `all`).
 
 **Inside your own app** (React 19):
 

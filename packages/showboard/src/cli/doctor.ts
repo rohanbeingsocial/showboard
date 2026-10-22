@@ -66,14 +66,18 @@ export async function runDoctor(options: DoctorOptions): Promise<DoctorReport> {
 
   const named = options.agents?.length ? pickAgents(options.agents, root) : undefined;
   const found: Found[] = [];
-  const unset: { agent: Agent; status: Check["status"]; detail: string; unreadable?: boolean }[] = [];
+  const unset: { agent: Agent; path: string; status: Check["status"]; detail: string; unreadable?: boolean }[] = [];
   for (const agent of named ?? AGENTS) {
     const path = agent.file(root, home);
     const file = agent.userWide ? path : relative(root, path);
     // A user-wide file serves every project: unless named, only an entry for this folder concerns it.
     const mine = named !== undefined || !agent.userWide;
+    // A file two agents read (BharatCode reads OpenCode's) is reported once.
+    const miss = (status: Check["status"], detail: string, unreadable?: boolean) => {
+      if (!unset.some((u) => u.path === path)) unset.push({ agent, path, status, detail: `${agent.label}: ${detail}`, unreadable });
+    };
     if (!existsSync(path)) {
-      if (named) unset.push({ agent, status: "fail", detail: `${agent.label}: there is no ${file}.` });
+      if (named) miss("fail", `there is no ${file}.`);
       continue;
     }
     let launch: Launch | undefined;
@@ -81,11 +85,11 @@ export async function runDoctor(options: DoctorOptions): Promise<DoctorReport> {
       const text = readFileSync(path, "utf8");
       launch = text.trim() ? agent.read(text) : undefined;
     } catch (err) {
-      if (mine) unset.push({ agent, status: "fail", detail: `${agent.label}: ${file} could not be read (${(err as Error).message}).`, unreadable: true });
+      if (mine) miss("fail", `${file} could not be read (${(err as Error).message}).`, true);
       continue;
     }
     if (!launch) {
-      if (mine) unset.push({ agent, status: named ? "fail" : "warn", detail: `${agent.label}: ${file} has no showboard server.` });
+      if (mine) miss(named ? "fail" : "warn", `${file} has no showboard server.`);
       continue;
     }
     if (!mine && !namesFolder(launch, root)) continue; // a user-wide entry for another folder
@@ -146,7 +150,8 @@ function readEntry(agent: Agent, root: string, home: string): Launch | undefined
 
 async function checkEntry(group: Found[], launch: Launch, root: string, self: string, init: string, timeoutMs?: number): Promise<Check> {
   const check = group.map((g) => g.agent.name).join(",");
-  const who = group.map((g) => `${g.agent.label} (${g.file})`).join(", ");
+  const files = [...new Set(group.map((g) => g.file))];
+  const who = files.map((file) => `${group.filter((g) => g.file === file).map((g) => g.agent.label).join(", ")} (${file})`).join(", ");
   const fail = (detail: string, fix: string): Check => ({ check, status: "fail", detail: `${who}: ${detail}`, fix });
 
   const script = /^node(\.exe)?$/i.test(launch.command) ? launch.args[0] : undefined;

@@ -371,11 +371,12 @@ showboard guide
 | `--port` | `4710` | Port for the bridge and the board page, on 127.0.0.1 |
 | `--boards` | `.showboard/boards` | Folder for saved boards. The agent's recipes go next to it, in `.showboard/recipes` |
 | `--root` | the current folder | The project folder, for agents that start servers somewhere else; relative paths resolve from it |
-| `--agent` | Claude Code, plus agents with settings here | Agents for `init`, comma separated: `claude`, `codex`, `opencode`, `gemini`, `cursor`, `vscode`, `antigravity`, `windsurf`, or `all` (every one but the user-wide `antigravity` and `windsurf`) |
+| `--agent` | Claude Code, plus agents with settings here | Agents for `init`, comma separated: `claude`, `codex`, `opencode`, `bharatcode`, `gemini`, `cursor`, `vscode`, `antigravity`, `windsurf`, or `all` (every one but the user-wide `antigravity` and `windsurf`) |
 | `--currency`, `--locale` | read from the files | How amounts print, e.g. `--currency INR --locale en-IN` |
 | `--agent-model` | `sonnet` | Model for the board-builder agent that `init` writes for Claude Code |
 | `--once` | | `pane` prints the board on screen and exits |
 | `-h`, `--help` | | Prints the usage |
+| `-v`, `--version` | | Prints the version |
 
 `SHOWBOARD_DB` is read when neither `--db` nor files are given, so a password can stay out of the settings files. Installed from npm, `init` writes each entry as `npx -y showboard …` (`cmd /c npx -y showboard …` on Windows, where most agents cannot start `npx` directly); run from a built checkout of this repository, it writes `node <that checkout>/packages/showboard/dist/cli/main.js …` instead.
 
@@ -386,6 +387,7 @@ showboard guide
 | `claude` | `.mcp.json` | `mcpServers.showboard`: `command`, `args` |
 | `codex` | `.codex/config.toml` | `[mcp_servers.showboard]`: `command`, `args`, `startup_timeout_sec = 60`. Codex reads a project's file only when the project is trusted |
 | `opencode` | `opencode.json` (or an existing `opencode.jsonc`) | `mcp.showboard`: `type: "local"`, `command` (one array), `enabled`, `timeout: 30000` |
+| `bharatcode` | `opencode.json`, the same file as `opencode` | The same entry: BharatCode is a fork of OpenCode. `init` writes the file once for both |
 | `gemini` | `.gemini/settings.json` | `mcpServers.showboard`: `command`, `args`. Gemini CLI starts it only in a trusted folder |
 | `cursor` | `.cursor/mcp.json` | `mcpServers.showboard`, with `--root <this folder>` |
 | `vscode` | `.vscode/mcp.json` | `servers.showboard`: `type: "stdio"`, with `--root ${workspaceFolder}` |

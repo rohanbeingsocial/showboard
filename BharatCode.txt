@@ -1,0 +1,48 @@
+Showboard, with BharatCode
+==========================
+
+Project:  Showboard
+Repo:     https://github.com/rohanbeingsocial/showboard
+npm:      https://www.npmjs.com/package/showboard
+Track:    Coding & developer tools
+Built by: Rohan (github.com/rohanbeingsocial)
+License:  MIT
+
+
+What it is
+----------
+Showboard lets a coding agent answer questions about your data with boards
+(charts, tables, headline numbers and notes) instead of paragraphs. The agent
+writes read-only SQL over your Excel, CSV, SQLite or Postgres data; Showboard
+runs it and draws the board in your browser, inside your own React app, or in
+a terminal pane beside the agent. Every number comes from the data itself, and
+every chart can show the query behind it.
+
+
+How it works with BharatCode
+----------------------------
+Showboard is an MCP server. The BharatCode CLI (a fork of OpenCode) runs MCP
+servers, so BharatCode's own models, Qwen 3.8 27B and DeepSeek V4.1 Flash on
+the BharatCode model API, read your data and draw the boards.
+
+In the folder with your data:
+
+    npm install -g bharatcode
+    bharatcode auth login
+    npx -y showboard init "Sales 2026.xlsx" --agent bharatcode
+    npx -y showboard doctor
+    bharatcode .
+
+Then ask: "What is in my data? Draw me a board of it." Boards appear at
+http://localhost:4710, or in a terminal beside the agent with
+"npx showboard pane".
+
+`showboard init --agent bharatcode` writes Showboard into opencode.json, which
+BharatCode reads. `showboard doctor` starts Showboard the way BharatCode will
+and checks it answers.
+
+
+Needs
+-----
+Node.js 22.13 or later, and a BharatCode account with model access
+(student, Lite or Pro).

@@ -16,7 +16,7 @@ describe("init for each agent", () => {
     mkdirSync(join(root, ".codex"));
     writeFileSync(join(root, "opencode.json"), "{}");
     expect(pickAgents(undefined, root).map((a) => a.name)).toEqual(["claude", "codex", "opencode"]);
-    expect(pickAgents(["all"], root).map((a) => a.name)).toEqual(["claude", "codex", "opencode", "gemini", "cursor", "vscode"]);
+    expect(pickAgents(["all"], root).map((a) => a.name)).toEqual(["claude", "codex", "opencode", "bharatcode", "gemini", "cursor", "vscode"]);
     expect(pickAgents(["codex,antigravity"], root).map((a) => a.name)).toEqual(["codex", "antigravity"]);
     expect(() => pickAgents(["cursr"], root)).toThrow(/Unknown agent cursr/);
   });
@@ -32,6 +32,9 @@ describe("init for each agent", () => {
       $schema: "https://opencode.ai/config.json",
       mcp: { showboard: { type: "local", command: ["npx", "-y", "showboard", "mcp", "--file", "data"], enabled: true, timeout: 30000 } },
     });
+    // BharatCode, a fork of OpenCode, reads the same file and entry.
+    expect(agent("bharatcode").file(root, "~")).toBe(join(root, "opencode.json"));
+    expect(agent("bharatcode").read(readFileSync(join(root, "opencode.json"), "utf8"))).toEqual(launch);
     writeAgent(agent("gemini"), launch, root);
     expect(json(join(root, ".gemini", "settings.json")).mcpServers).toEqual({ showboard: launch });
     writeAgent(agent("vscode"), launch, root);
