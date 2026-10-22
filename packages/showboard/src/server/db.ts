@@ -68,8 +68,8 @@ export async function openDatabase(input: DatabaseInput): Promise<Database> {
   if (typeof input === "object" && "query" in input && "describe" in input) return input;
   if (typeof input === "object") return postgres(input.pool, false);
   if (/^postgres(ql)?:\/\//i.test(input)) {
-    // webpackIgnore (honoured by webpack and Turbopack): pg is optional, so an app that bundles
-    // Showboard, as Next.js does, must not need it at build time.
+    // webpackIgnore (honoured by webpack and Turbopack): in an app that bundles Showboard, as
+    // Next.js does, pg stays a plain Node import; bundled, it trips on its optional native driver.
     const pg = await import(/* webpackIgnore: true */ "pg").catch(() => {
       throw new Error('A Postgres URL needs the "pg" package: npm install pg');
     });

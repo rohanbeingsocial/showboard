@@ -23,7 +23,7 @@ Returns `Promise<Showboard>`. Give it `db` or `files` (not both), or neither whe
 
 | Option | Default | What it does |
 |---|---|---|
-| `db` | none | A Postgres URL (`postgres://…`, needs the `pg` package), a SQLite file path, `{ pool }` with your own `pg` Pool, or your own [`Database`](#your-own-database) |
+| `db` | none | A Postgres URL (`postgres://…`), a SQLite file path, `{ pool }` with your own `pg` Pool, or your own [`Database`](#your-own-database) |
 | `files` | none | Excel (`.xlsx`, `.xlsm`), `.csv` and `.tsv` files, or folders of them, read as a database |
 | `sources` | `[]` | Rows your app computes, offered to the agent by name ([Sources](#sources)) |
 | `recipes` | `[]` | Boards your app ships ([Recipes](#recipes)); a bad one fails at start |

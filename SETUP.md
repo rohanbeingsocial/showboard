@@ -4,8 +4,8 @@ You are a coding agent, setting up Showboard in the user's project. Showboard gi
 
 **How to run Showboard.** `showboard` below means one of these:
 
-- **From npm**, once it is published: `npx -y showboard`.
-- **From a checkout of this repository**, as now: `node <checkout>/packages/showboard/dist/cli/main.js`. Get one with `git clone https://github.com/rohanbeingsocial/showboard`, then run `npm install` and `npm run build` in it.
+- **From npm**, the usual way: `npx -y showboard`.
+- **From a checkout of this repository**, only to try unreleased changes: `node <checkout>/packages/showboard/dist/cli/main.js`. Get one with `git clone https://github.com/rohanbeingsocial/showboard`, then run `npm install` and `npm run build` in it.
 
 `showboard guide` prints these steps with the right command filled in. `showboard --help` lists every command and option.
 
@@ -45,7 +45,7 @@ showboard init --db postgres://localhost/shop       # Postgres, a local database
 ```
 
 - **SQLite:** give the file's path. Prisma's `file:./dev.db` is relative to the `prisma/` folder, so pass `prisma/dev.db`.
-- **Postgres with a password:** keep it out of the settings files, which are often committed. Run `showboard init` with no `--db`, and have the user set `SHOWBOARD_DB` to the URL in the environment the agent starts from. Postgres also needs the `pg` package where Showboard runs (a checkout has it).
+- **Postgres with a password:** keep it out of the settings files, which are often committed. Run `showboard init` with no `--db`, and have the user set `SHOWBOARD_DB` to the URL in the environment the agent starts from.
 - Showboard runs every query read-only. Suggest a read-only database role anyway.
 
 ### C. Their app
@@ -55,7 +55,7 @@ Three parts:
 - a page renders the boards;
 - the agents' settings point at the app.
 
-**1. Install** in the app: `npm install showboard zod`, and `pg` for Postgres. Showboard needs React 19 and zod 4; if npm reports a conflict with the app's React or zod, stop and tell the user. From a checkout, run `npm pack` in `<checkout>/packages/showboard`. It writes `showboard-0.2.0.tgz` there (the checkout's git ignores it). Then, in the app: `npm install <checkout>/packages/showboard/showboard-0.2.0.tgz zod`.
+**1. Install** in the app: `npm install showboard zod` (Postgres support comes with it). Showboard needs React 19 and zod 4; if npm reports a conflict with the app's React or zod, stop and tell the user. To use a checkout instead, run `npm pack` in `<checkout>/packages/showboard`. It writes `showboard-<version>.tgz` there (the checkout's git ignores it). Then, in the app, run `npm install <checkout>/packages/showboard/showboard-<version>.tgz zod`.
 
 **2. Server.** Create one Showboard when the server starts and mount its handler at a path. The data comes from:
 - `db`: the app's database URL, or a SQLite file;

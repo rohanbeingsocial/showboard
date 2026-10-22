@@ -63,10 +63,7 @@ To be fair to the other side: the pages Claude wrote on its own were more design
 
 ## Quick start
 
-> [!IMPORTANT]
-> Showboard is not on npm yet. Run it from a clone of this repository, and wherever this page says `npx showboard`, use `node <your clone>/packages/showboard/dist/cli/main.js` instead. `init` run that way writes settings that start Showboard from your clone.
-
-You need Node.js 22.13 or later and a coding agent. The demo uses Claude Code.
+You need Node.js 22.13 or later and a coding agent. The demo uses Claude Code. Showboard is on npm as [`showboard`](https://www.npmjs.com/package/showboard).
 
 ### Let your agent set it up
 
@@ -200,10 +197,9 @@ Boards have been drawn end to end in Claude Code. For the other agents, the sett
 
 ```bash
 npm install showboard zod
-npm install pg          # only for Postgres
 ```
 
-The React parts need React 19. Before Showboard is on npm, run `npm pack` in `packages/showboard` of a built clone, then `npm install <path>/showboard-0.2.0.tgz zod` in your app.
+The React parts need React 19. Postgres support (`pg`) comes with the package.
 
 **Server.** The handler takes a fetch `Request` and returns a `Response`, so any Node server can mount it.
 
@@ -447,7 +443,7 @@ Yes, with any agent that speaks MCP. `showboard init --agent` writes the setting
 
 - [x] A pane beside the terminal: `showboard pane` for any agent, and a Claude Code mod
 - [x] Settings for Codex, OpenCode, Gemini CLI, Cursor, VS Code, Antigravity and Windsurf
-- [ ] Publish to npm
+- [x] Publish to npm
 - [ ] A leaner launch that trims Claude Code's fixed prompt, the biggest share of what a board costs
 - [ ] A `board-builder` agent for the agents besides Claude Code that have subagents
 
