@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "showboard": {
+      "command": "node",
+      "args": ["../../packages/showboard/dist/cli/main.js", "mcp", "data", "--port", "4720"]
+    }
+  }
+}

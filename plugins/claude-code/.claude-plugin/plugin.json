@@ -1,0 +1,16 @@
+{
+  "name": "showboard",
+  "version": "0.1.0",
+  "description": "Showboard's boards in a pane beside the chat: charts, tables and notes drawn as text, updated as Claude draws them.",
+  "author": { "name": "Rohan" },
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "url": {
+      "type": "string",
+      "title": "Showboard URL",
+      "description": "Where Showboard answers, such as http://127.0.0.1:4710 or an app's http://127.0.0.1:3000/api/showboard. Empty: read from this folder's .mcp.json, else port 4710.",
+      "default": ""
+    }
+  }
+}

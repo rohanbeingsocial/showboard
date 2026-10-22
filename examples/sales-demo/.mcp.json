@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "showboard": {
+      "command": "node",
+      "args": ["../../packages/showboard/dist/cli/main.js", "mcp", "--url", "http://127.0.0.1:4710/showboard"]
+    }
+  }
+}

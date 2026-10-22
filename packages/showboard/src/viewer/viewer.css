@@ -1,0 +1,100 @@
+:root {
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+body {
+  margin: 0;
+}
+
+.sv-page {
+  --sv-bg: #f6f7f9;
+  --sv-panel: #ffffff;
+  --sv-fg: #16181d;
+  --sv-line: #e5e7eb;
+  /* The board list sits outside .sb-board, so it reads these. */
+  --sb-muted: #6b7280;
+  --sb-grid: #eef0f3;
+  --sb-bad: #b91c1c;
+  min-height: 100vh;
+  background: var(--sv-bg);
+  color: var(--sv-fg);
+}
+.sv-page.sv-dark {
+  --sv-bg: #0b0d11;
+  --sv-panel: #12151b;
+  --sv-fg: #e7e9ee;
+  --sv-line: #262b36;
+  --sb-muted: #8b93a3;
+  --sb-grid: #1f2430;
+  --sb-bad: #f87171;
+  color-scheme: dark;
+}
+
+.sv-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--sv-panel);
+  border-bottom: 1px solid var(--sv-line);
+  font-weight: 650;
+}
+.sv-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+.sv-dot.sv-on {
+  background: #10b981;
+}
+
+.sv-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 24px;
+  align-items: start;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.sv-main .sb-board {
+  --sb-bg: transparent;
+}
+@media (max-width: 900px) {
+  .sv-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.sv-empty {
+  text-align: center;
+}
+.sv-empty h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.sv-side h3 {
+  margin: 6px 8px 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sb-muted);
+}
+.sv-side h3 + * {
+  margin-bottom: 18px;
+}
+.sv-tables {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 8px;
+}
+.sv-table {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+.sv-table code {
+  font-size: 12px;
+}

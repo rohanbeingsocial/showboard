@@ -1,0 +1,7 @@
+[
+  { "id": "split", "ask": "How is 2026 revenue split by region so far? Show me." },
+  { "id": "trend", "ask": "Show me monthly revenue in 2026, a line per region.", "then": "Make it quarterly instead, as bars." },
+  { "id": "targets", "ask": "Which regions are behind their 2026 targets so far, and by how much? Show me." },
+  { "id": "reps", "ask": "Who are the top 5 sales reps by revenue this year, and when did each join? Show me." },
+  { "id": "margin", "ask": "Which products make the most money after cost? Show me the top 5 by margin." }
+]

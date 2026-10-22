@@ -1,0 +1,189 @@
+#!/usr/bin/env node
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { relative } from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
+import { builderAgent, createShowboard, INSTRUCTIONS, serve, type Showboard } from "../server/index.js";
+import { agentNames, pickAgents, writeAgent, type Launch } from "./agents.js";
+import { remoteBackend, runMcp, type ToolBackend } from "./mcp.js";
+import { runPane } from "./pane.js";
+
+const HELP = `showboard: a pen for your coding agent, to draw, show and do in your app
+
+  showboard serve --db <postgres-url | file.sqlite> [--port 4710] [--boards .showboard/boards]
+  showboard serve <file.xlsx | file.csv | folder> ... [--port 4710]
+      Serve the tools, the browser bridge and a board page at http://localhost:4710.
+      Your own app can connect instead, with <ShowboardProvider url="http://127.0.0.1:4710">.
+
+  showboard mcp --db <...> | <files...> [--port 4710] [--boards ...] [--root <folder>]
+      The MCP server your coding agent starts. It also serves the browser bridge and board
+      page, or joins a Showboard already serving on that port. --root: the project folder,
+      for agents that start servers somewhere else.
+
+  showboard mcp --url <http://localhost:3000/api/showboard>
+      Only forward to a Showboard your own server mounts.
+
+  showboard pane [--url <http://127.0.0.1:4710>] [--once]
+      The boards as text in this terminal: split it beside any coding agent and each board
+      appears as the agent draws it. --once prints the board on screen and exits.
+
+  showboard init [--db <...> | <files...> | --url <...>] [--agent <names>] [--port 4710]
+      Add Showboard to your coding agents in this folder. --agent names them, comma
+      separated: ${agentNames.join(", ")}, or all (every one but the
+      user-wide antigravity and windsurf). Without it: Claude Code, plus any agent this
+      folder already has settings for. Claude Code also gets a board-builder agent
+      (.claude/agents, --agent-model sonnet) that draws new kinds of boards on a cheaper model.
+
+  Spreadsheets: .xlsx, .xlsm, .csv and .tsv files, or folders of them (also --file <path>).
+  Each sheet becomes a table your agent can query; the files are only read, and reloaded
+  when they change. --db can also come from the SHOWBOARD_DB environment variable.
+
+  Amounts print in the currency the spreadsheets are written in (₹1,200 → rupees), or
+  --currency INR (any ISO code) and --locale en-IN for how digits group.
+`;
+
+const { positionals, values } = parseArgs({
+  allowPositionals: true,
+  options: {
+    db: { type: "string" },
+    file: { type: "string", multiple: true },
+    url: { type: "string" },
+    port: { type: "string", default: "4710" },
+    boards: { type: "string", default: ".showboard/boards" },
+    root: { type: "string" },
+    agent: { type: "string", multiple: true },
+    "agent-model": { type: "string", default: "sonnet" },
+    currency: { type: "string" },
+    locale: { type: "string" },
+    once: { type: "boolean" },
+    help: { type: "boolean", short: "h" },
+  },
+});
+const command = positionals[0];
+const port = Number(values.port);
+const files = [...(values.file ?? []), ...positionals.slice(1)];
+const db = values.db ?? (files.length ? undefined : process.env.SHOWBOARD_DB);
+const page = `http://localhost:${port}`;
+const openHint = `Ask the user to open ${page} in a browser, or to run "showboard pane" in a terminal beside you.`;
+
+async function start(): Promise<Showboard> {
+  if (!db && !files.length) throw new Error("Pass --db <postgres-url | file.sqlite>, spreadsheet files or a folder of them (or set SHOWBOARD_DB).");
+  const format = { ...(values.currency ? { currency: values.currency.toUpperCase() } : {}), ...(values.locale ? { locale: values.locale } : {}) };
+  return createShowboard({ db, files, boardsDir: values.boards, openHint, format });
+}
+
+async function isShowboardAt(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${url}/health`);
+    return res.ok && ((await res.json()) as { ok?: boolean }).ok === true;
+  } catch {
+    return false; // nothing listening
+  }
+}
+
+/** How an agent starts this Showboard: npx once it is installed from npm, else this very file. */
+function launch(args: string[]): Launch {
+  const self = fileURLToPath(import.meta.url);
+  if (!self.split(/[\\/]/).includes("node_modules")) return { command: "node", args: [self, ...args] };
+  // Windows cannot start npx directly from most agents; cmd /c runs it.
+  return process.platform === "win32" ? { command: "cmd", args: ["/c", "npx", "-y", "showboard", ...args] } : { command: "npx", args: ["-y", "showboard", ...args] };
+}
+
+async function main(): Promise<void> {
+  if (!command || values.help) {
+    process.stdout.write(HELP);
+    return;
+  }
+  if (values.root) {
+    if (values.root.includes("${")) throw new Error(`--root ${values.root} was not filled in by your editor; give the project folder's path instead.`);
+    process.chdir(values.root);
+  }
+  const local = `http://127.0.0.1:${port}`;
+
+  if (command === "pane") {
+    const format = { ...(values.currency ? { currency: values.currency.toUpperCase() } : {}), ...(values.locale ? { locale: values.locale } : {}) };
+    await runPane({ url: values.url ?? local, once: values.once, ...(Object.keys(format).length ? { format } : {}) });
+    return;
+  }
+
+  if (command === "serve") {
+    const board = await start();
+    await serve(board.handler({ viewer: true }), { port });
+    const tables = (await board.db?.describe())?.length ?? 0;
+    console.log(`showboard: ${files.length ? `${tables} table${tables === 1 ? "" : "s"} from your spreadsheets` : `${board.db?.kind ?? "no"} database`}, ${board.tools.length} tools`);
+    for (const note of board.db?.notes?.() ?? []) console.log(`showboard: ${note}`);
+    console.log(`showboard: boards appear at ${page}`);
+    return;
+  }
+
+  if (command === "mcp") {
+    console.log = console.error; // stdout carries the MCP protocol only
+    let backend: ToolBackend;
+    if (values.url) backend = remoteBackend(values.url);
+    else if (await isShowboardAt(local)) backend = remoteBackend(local);
+    else {
+      const board = await start();
+      try {
+        await serve(board.handler({ viewer: true }), { port });
+        console.error(`showboard: serving the browser bridge and board page on ${local}`);
+      } catch (err) {
+        throw new Error(`Port ${port} is taken by something that is not Showboard (${(err as Error).message}). Pass --port.`);
+      }
+      backend = {
+        list: async () => (await (await fetch(`${local}/tools`)).json()) as Awaited<ReturnType<ToolBackend["list"]>>,
+        call: (name, input) => board.callTool(name, input),
+      };
+    }
+    runMcp(backend, values.url ? INSTRUCTIONS : `${INSTRUCTIONS} Boards appear at ${page}; if no browser has it open, tell the user to open it.`);
+    return;
+  }
+
+  if (command === "init") {
+    const source = values.db ? ["--db", values.db] : files.flatMap((f) => ["--file", f]);
+    const formatArgs = [...(values.currency ? ["--currency", values.currency] : []), ...(values.locale ? ["--locale", values.locale] : [])];
+    const args = values.url ? ["--url", values.url] : [...source, ...(values.port !== "4710" ? ["--port", values.port] : []), ...formatArgs];
+    const root = process.cwd();
+    const agents = pickAgents(values.agent, root);
+    const written: string[] = [];
+    for (const agent of agents) {
+      const where = agent.root === "absolute" ? ["--root", root] : agent.root === "workspace-variable" ? ["--root", "${workspaceFolder}"] : [];
+      const entry = launch(["mcp", ...where, ...args]);
+      let file: string;
+      try {
+        file = writeAgent(agent, entry, root);
+      } catch (err) {
+        // A settings file with comments (JSONC) is not ours to rewrite.
+        console.log(`showboard: ${agent.label}: could not update ${agent.file(root, "~")} (${(err as Error).message}). Add this server by hand: ${JSON.stringify({ showboard: entry })}`);
+        continue;
+      }
+      const shown = agent.userWide ? file : relative(root, file) || file;
+      written.push(agent.name);
+      console.log(`showboard: ${agent.label}: added to ${shown}. ${agent.note}`);
+    }
+    if (written.includes("claude")) {
+      const agent = ".claude/agents/board-builder.md";
+      if (existsSync(agent)) console.log(`showboard: kept your ${agent}.`);
+      else {
+        mkdirSync(".claude/agents", { recursive: true });
+        writeFileSync(agent, builderAgent("showboard", values["agent-model"]));
+        console.log(`showboard: added ${agent}: Claude Code builds new kinds of boards on ${values["agent-model"]} in a small context of its own (change the model there).`);
+      }
+    }
+    if (launch([]).command === "node") console.log(`showboard: these entries start this checkout (${fileURLToPath(import.meta.url)}); run init again from an npm install to use npx.`);
+    if (values.db && /:\/\/[^/:]+:[^@/]+@/.test(values.db)) console.log("showboard: that URL holds a password. Prefer SHOWBOARD_DB in your environment and leave --db out of the settings files.");
+    for (const f of files) if (!existsSync(f)) console.log(`showboard: ${f} does not exist yet.`);
+    if (!values.url && !values.db && !files.length && !process.env.SHOWBOARD_DB) console.log("showboard: no --db or files given; set SHOWBOARD_DB before starting your agent.");
+    const others = agentNames.filter((n) => !written.includes(n));
+    if (others.length) console.log(`showboard: for other agents: showboard init --agent ${others.join(",")} (same options).`);
+    if (!values.url) console.log(`showboard: once your agent is running here, open ${page} to see its boards, or run "showboard pane" in a terminal beside it.`);
+    return;
+  }
+
+  process.stdout.write(HELP);
+  process.exitCode = 1;
+}
+
+main().catch((err: Error) => {
+  console.error(`showboard: ${err.message}`);
+  process.exit(1);
+});

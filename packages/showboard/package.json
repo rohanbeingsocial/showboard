@@ -1,0 +1,74 @@
+{
+  "name": "showboard",
+  "version": "0.2.0",
+  "description": "A pen for your coding agent (Claude Code, Codex, OpenCode, Gemini CLI…): it draws boards of charts, tables and notes from your data, read-only; shows them in your app or a terminal pane; and runs the actions your app allows.",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "mcp",
+    "claude-code",
+    "codex",
+    "opencode",
+    "gemini-cli",
+    "coding-agent",
+    "generative-ui",
+    "dashboard",
+    "terminal",
+    "json-render"
+  ],
+  "bin": {
+    "showboard": "dist/cli/main.js"
+  },
+  "exports": {
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
+    },
+    "./spec": {
+      "types": "./dist/spec/index.d.ts",
+      "default": "./dist/spec/index.js"
+    },
+    "./text": {
+      "types": "./dist/text/index.d.ts",
+      "default": "./dist/text/index.js"
+    },
+    "./styles.css": "./dist/react/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "build": "tsc -p . && node scripts/build-viewer.mjs"
+  },
+  "dependencies": {
+    "@json-render/core": "0.21.1",
+    "@json-render/react": "0.21.1",
+    "read-excel-file": "^9.3.12"
+  },
+  "peerDependencies": {
+    "pg": "^8.12.0",
+    "react": "^19.0.0",
+    "zod": "^4.3.6"
+  },
+  "peerDependenciesMeta": {
+    "pg": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.5"
+  }
+}
