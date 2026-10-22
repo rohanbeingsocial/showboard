@@ -1,15 +1,14 @@
 <div align="center">
 
-<img src="assets/showboard-banner.png" alt="Showboard, for AI coding agents: your AI agent answers with dashboards, not paragraphs" width="880" />
+<img src="assets/showboard-banner-dark.png" alt="Showboard" width="880" />
 
 ### Ask in your terminal. Get a dashboard on your screen.
 
-Showboard is an open-source **MCP server** that lets **Claude Code**, Codex, Cursor, Gemini CLI and other coding agents answer questions about your **Postgres or SQLite database**, or a folder of **Excel and CSV files**, with charts, tables and headline numbers: in your browser, inside your own app, or beside your terminal.
+Showboard is an open-source **MCP server** that lets **Claude Code**, Codex, Cursor, Gemini CLI and other coding agents answer questions about your **SQL database**, or a folder of **Excel and CSV files**, with charts, tables and headline numbers: in your browser, inside your own app, or beside your terminal.
 
 [![MCP server](https://img.shields.io/badge/MCP-server-ff5a36?style=flat-square&logo=modelcontextprotocol&logoColor=white)](#works-with-your-agent)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2f6feb?style=flat-square)](LICENSE)
 [![Node.js 22.13 or later](https://img.shields.io/badge/node-%E2%89%A522.13-5fa04e?style=flat-square&logo=nodedotjs&logoColor=white)](#quick-start)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white)](packages/showboard/src)
 [![AI-assisted with Claude Code](https://img.shields.io/badge/AI--assisted-Claude%20Code-d97757?style=flat-square&logo=claude&logoColor=white)](#contributing)
 
 **[Quick start](#quick-start)** &nbsp;·&nbsp; **[How it works](#how-it-works)** &nbsp;·&nbsp; **[Benchmark](#benchmark)** &nbsp;·&nbsp; **[Docs](docs/reference.md)**
@@ -41,6 +40,26 @@ Showboard gives the agent a shorter path. The agent writes a few SQL queries and
 | **You see it** | In the terminal, or in a file you open | In your browser, inside your app, or beside your terminal |
 | **The numbers come from** | Python it wrote and ran | Read-only SQL, one click away under every chart |
 | **24 answers, measured** | $4.77 and 24.3 minutes | **$1.78 and 7.5 minutes** |
+
+## Benchmark
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/benchmark-dark.png" />
+    <img src="docs/images/benchmark-light.png" alt="Bar chart, lower is better. Cost: $4.77 for Claude Code alone against $1.78 with Showboard, 2.7× cheaper. Output tokens: 128,929 against 36,659, 3.5× fewer. Time: 24.3 minutes against 7.5, 3.2× faster" width="880" />
+  </picture>
+</p>
+
+Five questions about the sample spreadsheets (one with a follow-up), each asked four times over two runs: 24 answers each way, in Claude Code with Opus 5.5 at medium effort. On its own, Claude worked the numbers out in Python, then wrote an HTML page of charts. With Showboard, it wrote SQL and a short layout.
+
+- **2.7× cheaper:** $1.78 against $4.77, at API list price. On Pro and Max plans the same tokens count against your usage limit instead.
+- **3.5× fewer output tokens:** 36,659 against 128,929, and 2.3× fewer new input tokens (99,200 against 231,443).
+- **3.2× faster:** 7.5 minutes against 24.3.
+- **Cheaper on all 24 answers,** by 1.6× to 4.4×, with the same figures both ways.
+
+Most of what an answer costs is steps, because each step re-reads the whole conversation. On its own, Claude writes the analysis as code, checks it over several turns, then writes the page. With Showboard, a board is one call, and a board worth repeating becomes a recipe. In the [demo shop](#try-the-demo), at API list prices, *"Top 5 products of 2025"* was one `recipe` call ($0.26), and *"Each channel's revenue by quarter, 2025 vs 2026"* one `draw` call ($0.37) that saved itself as a recipe.
+
+To be fair to the other side: the pages Claude wrote on its own were more designed, each made to measure, where Showboard's boards are plainer and consistent. This is two runs on one dataset, and other agents have not been measured yet. The questions, every turn's results and how to rerun it on your own files are in [bench/](bench/README.md).
 
 ## Quick start
 
@@ -137,26 +156,6 @@ In Claude Code, the same view sits beside the chat as a mod: [plugins/claude-cod
 ```text
 /plugin install showboard --marketplace rohanbeingsocial/showboard
 ```
-
-## Benchmark
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/benchmark-dark.png" />
-    <img src="docs/images/benchmark-light.png" alt="Bar chart, lower is better. Cost: $4.77 for Claude Code alone against $1.78 with Showboard, 2.7× cheaper. Output tokens: 128,929 against 36,659, 3.5× fewer. Time: 24.3 minutes against 7.5, 3.2× faster" width="880" />
-  </picture>
-</p>
-
-Five questions about the sample spreadsheets (one with a follow-up), each asked four times over two runs: 24 answers each way, in Claude Code with Opus 5.5 at medium effort. On its own, Claude worked the numbers out in Python, then wrote an HTML page of charts. With Showboard, it wrote SQL and a short layout.
-
-- **2.7× cheaper:** $1.78 against $4.77, at API list price. On Pro and Max plans the same tokens count against your usage limit instead.
-- **3.5× fewer output tokens:** 36,659 against 128,929, and 2.3× fewer new input tokens (99,200 against 231,443).
-- **3.2× faster:** 7.5 minutes against 24.3.
-- **Cheaper on all 24 answers,** by 1.6× to 4.4×, with the same figures both ways.
-
-Most of what an answer costs is steps, because each step re-reads the whole conversation. On its own, Claude writes the analysis as code, checks it over several turns, then writes the page. With Showboard, a board is one call, and a board worth repeating becomes a recipe. On the demo shop, at API list prices, *"Top 5 products of 2025"* was one `recipe` call ($0.26), and *"Each channel's revenue by quarter, 2025 vs 2026"* one `draw` call ($0.37) that saved itself as a recipe.
-
-To be fair to the other side: the pages Claude wrote on its own were more designed, each made to measure, where Showboard's boards are plainer and consistent. This is two runs on one dataset, and other agents have not been measured yet. The questions, every turn's results and how to rerun it on your own files are in [bench/](bench/README.md).
 
 ## Features
 
