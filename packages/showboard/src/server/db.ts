@@ -68,7 +68,9 @@ export async function openDatabase(input: DatabaseInput): Promise<Database> {
   if (typeof input === "object" && "query" in input && "describe" in input) return input;
   if (typeof input === "object") return postgres(input.pool, false);
   if (/^postgres(ql)?:\/\//i.test(input)) {
-    const pg = await import("pg").catch(() => {
+    // webpackIgnore (honoured by webpack and Turbopack): pg is optional, so an app that bundles
+    // Showboard, as Next.js does, must not need it at build time.
+    const pg = await import(/* webpackIgnore: true */ "pg").catch(() => {
       throw new Error('A Postgres URL needs the "pg" package: npm install pg');
     });
     const Pool = (pg.default ?? pg).Pool;
@@ -87,7 +89,7 @@ const PG_TYPE_NAMES: Record<number, string> = {
 };
 
 async function postgres(pool: PgPoolLike, ownsPool: boolean): Promise<Database> {
-  const pg = await import("pg");
+  const pg = await import(/* webpackIgnore: true */ "pg");
   const types = (pg.default ?? pg).types;
   const typeParsers = {
     getTypeParser(oid: number, format?: string) {
@@ -167,7 +169,7 @@ async function postgres(pool: PgPoolLike, ownsPool: boolean): Promise<Database> 
 }
 
 async function sqlite(file: string): Promise<Database> {
-  const { DatabaseSync } = await import("node:sqlite");
+  const { DatabaseSync } = await import(/* webpackIgnore: true */ "node:sqlite"); // a built-in some bundlers do not know yet
   return sqliteOver(new DatabaseSync(file, { readOnly: true }));
 }
 

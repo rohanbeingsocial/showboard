@@ -117,7 +117,7 @@ const display = (path: string) => {
 };
 
 async function load(targets: string[]): Promise<Loaded> {
-  const { DatabaseSync } = await import("node:sqlite");
+  const { DatabaseSync } = await import(/* webpackIgnore: true */ "node:sqlite"); // a built-in some bundlers do not know yet
   const sig = signature(targets);
   const { files, notes } = expand(targets);
   const db = new DatabaseSync(":memory:");

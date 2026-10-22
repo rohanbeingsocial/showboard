@@ -64,7 +64,7 @@
     "dist"
   ],
   "engines": {
-    "node": ">=22.5"
+    "node": ">=22.13"
   },
   "scripts": {
     "build": "tsc -p . && node scripts/build-viewer.mjs"

@@ -1,14 +1,18 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { builderAgent, createShowboard, INSTRUCTIONS, serve, type Showboard } from "../server/index.js";
 import { agentNames, pickAgents, writeAgent, type Launch } from "./agents.js";
+import { formatReport, nodeHasSqlite, runDoctor, shellArg } from "./doctor.js";
 import { remoteBackend, runMcp, type ToolBackend } from "./mcp.js";
 import { runPane } from "./pane.js";
 
 const HELP = `showboard: a pen for your coding agent, to draw, show and do in your app
+
+  Setting it up for someone? "showboard guide" prints the steps, written for coding agents,
+  and "showboard doctor" checks the result.
 
   showboard serve --db <postgres-url | file.sqlite> [--port 4710] [--boards .showboard/boards]
   showboard serve <file.xlsx | file.csv | folder> ... [--port 4710]
@@ -26,6 +30,15 @@ const HELP = `showboard: a pen for your coding agent, to draw, show and do in yo
   showboard pane [--url <http://127.0.0.1:4710>] [--once]
       The boards as text in this terminal: split it beside any coding agent and each board
       appears as the agent draws it. --once prints the board on screen and exits.
+
+  showboard doctor [--agent <names>] [--json]
+      Check this folder's setup as each agent will meet it: starts every Showboard entry the
+      agents' settings hold, lists its tools and its data, and says how to fix what fails.
+      Exits 1 when something must be fixed. --json for a report to read in code.
+
+  showboard guide
+      Step-by-step setup instructions for a coding agent: which path fits the project, the
+      commands, your app's server code for Next.js, Express, Hono or node:http, and checks.
 
   showboard init [--db <...> | <files...> | --url <...>] [--agent <names>] [--port 4710]
       Add Showboard to your coding agents in this folder. --agent names them, comma
@@ -56,6 +69,7 @@ const { positionals, values } = parseArgs({
     currency: { type: "string" },
     locale: { type: "string" },
     once: { type: "boolean" },
+    json: { type: "boolean" },
     help: { type: "boolean", short: "h" },
   },
 });
@@ -68,6 +82,10 @@ const openHint = `Ask the user to open ${page} in a browser, or to run "showboar
 
 async function start(): Promise<Showboard> {
   if (!db && !files.length) throw new Error("Pass --db <postgres-url | file.sqlite>, spreadsheet files or a folder of them (or set SHOWBOARD_DB).");
+  // Spreadsheets and SQLite files need node:sqlite: say so, rather than fail on its import.
+  if (!nodeHasSqlite() && (files.length || !/^postgres(ql)?:/i.test(db ?? ""))) {
+    throw new Error(`Showboard needs Node.js 22.13 or later to read spreadsheets and SQLite files; this is ${process.version}. Install a newer Node.js (https://nodejs.org), then start your agent again.`);
+  }
   const format = { ...(values.currency ? { currency: values.currency.toUpperCase() } : {}), ...(values.locale ? { locale: values.locale } : {}) };
   return createShowboard({ db, files, boardsDir: values.boards, openHint, format });
 }
@@ -89,6 +107,12 @@ function launch(args: string[]): Launch {
   return process.platform === "win32" ? { command: "cmd", args: ["/c", "npx", "-y", "showboard", ...args] } : { command: "npx", args: ["-y", "showboard", ...args] };
 }
 
+/** How a person or an agent runs this command line, for the commands Showboard suggests. */
+function selfCommand(): string {
+  const self = fileURLToPath(import.meta.url);
+  return self.split(/[\\/]/).includes("node_modules") ? "npx showboard" : `node "${self}"`;
+}
+
 async function main(): Promise<void> {
   if (!command || values.help) {
     process.stdout.write(HELP);
@@ -103,6 +127,20 @@ async function main(): Promise<void> {
   if (command === "pane") {
     const format = { ...(values.currency ? { currency: values.currency.toUpperCase() } : {}), ...(values.locale ? { locale: values.locale } : {}) };
     await runPane({ url: values.url ?? local, once: values.once, ...(Object.keys(format).length ? { format } : {}) });
+    return;
+  }
+
+  if (command === "doctor") {
+    const report = await runDoctor({ root: process.cwd(), agents: values.agent, self: selfCommand() });
+    process.stdout.write(values.json ? `${JSON.stringify(report, null, 2)}\n` : formatReport(report, selfCommand()));
+    process.exitCode = report.ok ? 0 : 1;
+    return;
+  }
+
+  if (command === "guide") {
+    // The repository's SETUP.md, which the build copies next to the command line.
+    const guide = readFileSync(new URL("../SETUP.md", import.meta.url), "utf8");
+    process.stdout.write(`In these steps, "showboard" means: ${selfCommand()}\n\n${guide}`);
     return;
   }
 
@@ -174,8 +212,11 @@ async function main(): Promise<void> {
     for (const f of files) if (!existsSync(f)) console.log(`showboard: ${f} does not exist yet.`);
     if (!values.url && !values.db && !files.length && !process.env.SHOWBOARD_DB) console.log("showboard: no --db or files given; set SHOWBOARD_DB before starting your agent.");
     const others = agentNames.filter((n) => !written.includes(n));
-    if (others.length) console.log(`showboard: for other agents: showboard init --agent ${others.join(",")} (same options).`);
-    if (!values.url) console.log(`showboard: once your agent is running here, open ${page} to see its boards, or run "showboard pane" in a terminal beside it.`);
+    // Commands as they can be run from here, with a password in a URL left out.
+    const same = args.map((a) => (/:\/\/[^/:]+:[^@/]+@/.test(a) ? "<url>" : shellArg(a))).join(" ");
+    if (others.length) console.log(`showboard: for other agents, the same setup: ${selfCommand()} init ${same} --agent ${others.join(",")}`);
+    if (!values.url) console.log(`showboard: once your agent is running here, open ${page} to see its boards, or run this in a terminal beside it: ${selfCommand()} pane${values.port === "4710" ? "" : ` --url http://127.0.0.1:${values.port}`}`);
+    console.log(`showboard: check the setup with: ${selfCommand()} doctor`);
     return;
   }
 
