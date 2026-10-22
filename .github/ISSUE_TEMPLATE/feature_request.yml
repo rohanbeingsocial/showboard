@@ -1,0 +1,23 @@
+name: Idea
+description: Something Showboard could do, or do better
+labels: [enhancement]
+body:
+  - type: textarea
+    id: trying
+    attributes:
+      label: What you were trying to do
+      description: The question you asked, or the board you wanted, and where Showboard fell short.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help
+      description: How you would like it to work. A sketch or an example board is welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: else
+    attributes:
+      label: Anything else
+      description: Workarounds you tried, or how other tools do it.

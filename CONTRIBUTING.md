@@ -1,6 +1,8 @@
 # Contributing to Showboard
 
-Thanks for helping. Showboard is built with AI assistance, mostly from Claude Code, and AI-assisted pull requests are welcome. What matters is that you have read the change and the tests pass.
+Thanks for helping. Showboard is built with AI assistance, mostly from Claude Code, and AI-assisted pull requests are welcome. What matters is that you have read the change and the tests pass. Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+Looking for somewhere to start? Try an issue labelled [good first issue](https://github.com/rohanbeingsocial/showboard/labels/good%20first%20issue). Questions are welcome in [Discussions](https://github.com/rohanbeingsocial/showboard/discussions).
 
 ## Set up
 
@@ -35,6 +37,8 @@ The tests are in `packages/showboard/test`, and the folders are described in the
 ## Reporting a bug
 
 Open an [issue](https://github.com/rohanbeingsocial/showboard/issues) with what you asked, what you expected and what you got, plus your agent, operating system and Node.js version. For a board that looks wrong, its JSON file from the `.showboard/boards` folder helps, but it holds the board's rows, so attach it only if they are fine to share.
+
+For a security problem, don't open an issue: report it privately, as [SECURITY.md](SECURITY.md) describes.
 
 ## License
 
