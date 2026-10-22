@@ -9,3 +9,5 @@ bench/.runs/
 rohanss/
 .project-memory/
 *.zip
+plugins/claude-desktop/build/
+*.mcpb

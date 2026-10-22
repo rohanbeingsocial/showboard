@@ -77,6 +77,10 @@ At the prompt of a Claude Code terminal session:
 
 When it asks, set **Data** to a folder of spreadsheets, one spreadsheet or a SQLite file (or **Database URL** to a Postgres URL), then ask Claude about your data. Boards appear in a pane beside the chat and at http://localhost:4711, in every project. A project where you ran `showboard init` keeps its own. See [plugins/claude-code](plugins/claude-code).
 
+### Claude desktop app: install the extension
+
+Download `showboard-<version>.mcpb` from the [latest release](https://github.com/rohanbeingsocial/showboard/releases/latest) and install it in **Settings**, **Extensions**, **Advanced settings**, **Install Extension…**. Pick your spreadsheet folder (or give a database) when it asks, and boards open at http://localhost:4712. No Node.js needed: the app brings its own. See [plugins/claude-desktop](plugins/claude-desktop).
+
 ### Let your agent set it up
 
 In your project, ask your coding agent:
@@ -497,6 +501,7 @@ npm run demo
 | `packages/showboard/src/cli` | The `serve`, `mcp`, `init` and `pane` commands, and each agent's settings |
 | `packages/showboard/src/viewer` | Showboard's own board page |
 | `plugins/claude-code` | The Claude Code plugin: a Showboard server and the pane beside the chat, listed for `/plugin install` in `.claude-plugin/marketplace.json` |
+| `plugins/claude-desktop` | The Claude desktop extension: `manifest.json` and `build.mjs`, which writes `showboard-<version>.mcpb` |
 | `examples/` | The demo shop and the sample spreadsheets |
 | `bench/` | The cost benchmark |
 

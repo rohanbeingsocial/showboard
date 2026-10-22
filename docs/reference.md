@@ -347,7 +347,7 @@ Boards go to every open tab and every pane. Actions go to the tab the user looke
 showboard serve --db <postgres-url | file.sqlite> | <files or folders...>  [--port 4710] [--boards .showboard/boards]
 showboard mcp   --db <...> | <files or folders...>  [--port 4710] [--boards .showboard/boards] [--root <folder>]
 showboard mcp   --url <http://localhost:3000/showboard>
-showboard mcp   --plugin  [--port 4711] [--boards <folder>]
+showboard mcp   --plugin <claude-code | claude-desktop>  [--port 4711] [--boards <folder>]
 showboard init  [--db <...> | <files or folders...> | --url <...>]  [--agent <names>] [--port 4710] [--agent-model sonnet]
 showboard pane  [--url <http://127.0.0.1:4710>] [--once] [--currency INR --locale en-IN]
 showboard doctor [--agent <names>] [--json]
@@ -359,7 +359,7 @@ showboard guide
 | `serve` | Serves the tools, the browser bridge and the board page on http://localhost:4710 as a process of its own. `mcp` joins it when it is running |
 | `mcp` | The MCP server your agent starts (over stdin and stdout). It also serves the bridge and the board page, or joins a Showboard already serving on that port |
 | `mcp --url` | Only forwards to the Showboard your own server mounts |
-| `mcp --plugin` | How the [Claude Code plugin](#the-claude-code-plugin) starts Showboard: the data comes from `SHOWBOARD_DB` or `SHOWBOARD_DATA`. In a folder whose `.mcp.json` starts a Showboard of its own (a server named `showboard`, or one whose command or arguments name it), it lists no tools, so Claude does not see each tool twice. With no data set, it lists none either, and its instructions tell Claude how the person sets it up |
+| `mcp --plugin` | How the [Claude Code plugin](#the-claude-code-plugin) and the [desktop extension](#the-claude-desktop-extension) start Showboard: the data comes from `SHOWBOARD_DB` or `SHOWBOARD_DATA`. In a folder whose `.mcp.json` starts a Showboard of its own (a server named `showboard`, or one whose command or arguments name it), it lists no tools, so Claude does not see each tool twice. With no data set, it lists none either, and its instructions tell Claude where that app keeps the setting |
 | `init` | Adds a `showboard` server to each agent's settings in this folder ([below](#init-for-each-agent)), and for Claude Code writes `.claude/agents/board-builder.md` unless one exists |
 | `pane` | The board on screen, drawn as text in this terminal, following each new board ([below](#panes)) |
 | `doctor` | Checks this folder's setup as each agent will meet it. It reads each agent's settings and starts each Showboard entry there with the same command and folder. Then it makes the agent's first MCP calls (`initialize`, `tools/list`, `describe_data`) and reports the tools and tables, or what failed with a fix. Entries that forward to an app (`--url`) need the app running. Exits 1 while anything must be fixed; `--json` prints `{ ok, root, checks: [{ check, status, detail, fix? }], next }`. `--agent` checks only the agents named |
@@ -368,7 +368,7 @@ showboard guide
 | Option | Default | What it does |
 |---|---|---|
 | `--db` | `$SHOWBOARD_DB` | A Postgres URL or a SQLite file |
-| `--plugin` | | `mcp` as the Claude Code plugin runs it ([above](#command-line)) |
+| `--plugin` | | `mcp` as the Claude Code plugin (`claude-code`) or the desktop extension (`claude-desktop`) runs it ([above](#command-line)) |
 | `<files>`, `--file` | | Spreadsheets, or folders of them (`--file` can repeat) |
 | `--url` | | The Showboard your app mounts, for `mcp`, `init` and `pane` |
 | `--port` | `4710` | Port for the bridge and the board page, on 127.0.0.1 |
@@ -409,7 +409,7 @@ A pane only watches: it gets every board shown, from any agent, and is never ask
 
 ### The Claude Code plugin
 
-The plugin in [plugins/claude-code](../plugins/claude-code) is the pane plus a Showboard of its own. It installs with `/plugin install showboard --marketplace rohanbeingsocial/showboard`, through the repository's `.claude-plugin/marketplace.json`. Its `.mcp.json` starts `npx -y showboard@<version> mcp --plugin --port 4711 --boards ${CLAUDE_PLUGIN_DATA}/boards`, with these options from the plugin's settings (`/plugin`, Showboard, Configure options):
+The plugin in [plugins/claude-code](../plugins/claude-code) is the pane plus a Showboard of its own. It installs with `/plugin install showboard --marketplace rohanbeingsocial/showboard`, through the repository's `.claude-plugin/marketplace.json`. Its `.mcp.json` starts `npx -y showboard@<version> mcp --plugin claude-code --port 4711 --boards ${CLAUDE_PLUGIN_DATA}/boards`, with these options from the plugin's settings (`/plugin`, Showboard, Configure options):
 
 | Option | Passed as | What it is |
 |---|---|---|
@@ -418,6 +418,17 @@ The plugin in [plugins/claude-code](../plugins/claude-code) is the pane plus a S
 | Showboard URL (`url`) | | Where the pane looks, for an app that mounts Showboard |
 
 The options belong to the person, not a project, so every Claude Code session on the machine serves the same data and shares one server on port 4711, with boards saved in the plugin's data folder. The port differs from `init`'s 4710 so that a project's own server never joins the plugin's, or the plugin's a project's: either would answer with the other's data. In a project that ran `init`, the plugin's server lists no tools and the project's own serves. Claude names the plugin's tools `mcp__plugin_showboard_showboard__<tool>`.
+
+### The Claude desktop extension
+
+[plugins/claude-desktop](../plugins/claude-desktop) builds `showboard-<version>.mcpb`, a desktop extension: `manifest.json`, the icon, and Showboard with its runtime dependencies (`node plugins/claude-desktop/build.mjs`). The desktop app runs `node <extension>/node_modules/showboard/dist/cli/main.js mcp --plugin claude-desktop --port 4712 --boards ~/.showboard/claude-desktop/boards` on the Node.js it ships with, with two options:
+
+| Option | Passed as | What it is |
+|---|---|---|
+| Spreadsheet folder (`folder`) | `SHOWBOARD_DATA` | A folder of spreadsheets, picked in the app |
+| Database (`database`) | `SHOWBOARD_DB` | A Postgres URL or a SQLite file's path, kept in the credential store. Used instead of the folder |
+
+Port 4712 keeps it apart from the Claude Code plugin's 4711 and `init`'s 4710, since each may serve other data. The app has no pane, so boards appear on the board page at http://localhost:4712.
 
 **Your own pane** can use the same drawing: `boardToText(board, { width, format?, sources?, tableRows?, chartRows? })` from `showboard/text` returns blocks of lines, each line a list of runs (`text`, and optionally `ink`, `bold`, `dim`), plus the board's buttons as `{ kind: "action", label, action, input }`. `ink` names a series color (`s1`…`s8`) or a tone (`accent`, `muted`, `good`, `bad`, `warn`, `info`); `INKS` maps them to hex. Every line fits in `width` cells.
 

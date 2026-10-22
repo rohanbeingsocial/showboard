@@ -1,0 +1,68 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/mcpb/main/dist/mcpb-manifest-v0.3.schema.json",
+  "manifest_version": "0.3",
+  "name": "showboard",
+  "display_name": "Showboard",
+  "version": "0.4.0",
+  "description": "Ask about your spreadsheets or database, and Claude answers with a board of charts, tables and notes in your browser. Read-only, and it runs on your computer.",
+  "long_description": "Showboard gives Claude a pen for your data. Point it at a folder of spreadsheets (.xlsx, .csv), a SQLite file or a Postgres database, then ask a question such as \"Show me revenue by month.\" Claude queries the data, read-only, and draws the answer as a board: headline numbers, line and bar charts, tables and notes, every figure from a query you can inspect. Boards open at http://localhost:4712 and are saved there, newest first.\n\nYour data stays on your computer: Showboard only reads it, serves boards on localhost, and contacts no host but your own database. Spreadsheets reload when you save them, and messy ones are fine: title rows, Total rows, N/A and amounts typed as text are handled.",
+  "author": {
+    "name": "Rohan",
+    "url": "https://github.com/rohanbeingsocial"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rohanbeingsocial/showboard.git"
+  },
+  "homepage": "https://github.com/rohanbeingsocial/showboard#readme",
+  "documentation": "https://github.com/rohanbeingsocial/showboard/blob/main/plugins/claude-desktop/README.md",
+  "support": "https://github.com/rohanbeingsocial/showboard/issues",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "node_modules/showboard/dist/cli/main.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/node_modules/showboard/dist/cli/main.js", "mcp", "--plugin", "claude-desktop", "--port", "4712", "--boards", "${HOME}/.showboard/claude-desktop/boards"],
+      "env": {
+        "SHOWBOARD_DATA": "${user_config.folder}",
+        "SHOWBOARD_DB": "${user_config.database}"
+      }
+    }
+  },
+  "tools": [
+    { "name": "describe_data", "description": "List the tables and columns Claude can read, with row counts." },
+    { "name": "draw", "description": "Draw a board in one call: headline numbers, charts, tables and notes, each from a read-only query." },
+    { "name": "recipe", "description": "Draw a ready-made board in one call, from a saved recipe and its values." },
+    { "name": "query_data", "description": "Run one read-only SQL SELECT and keep the rows for a board." },
+    { "name": "show_board", "description": "The long form of draw, for boards draw cannot describe." },
+    { "name": "list_boards", "description": "List saved boards, newest first." },
+    { "name": "get_screen", "description": "What an app that mounts Showboard shows now, and the actions it offers." },
+    { "name": "ui_act", "description": "Run one of that app's actions: open a page, set a filter, select something." }
+  ],
+  "tools_generated": false,
+  "keywords": ["dashboard", "charts", "tables", "excel", "csv", "spreadsheet", "sql", "sqlite", "postgres", "data-visualization"],
+  "license": "MIT",
+  "privacy_policies": ["https://github.com/rohanbeingsocial/showboard/blob/main/plugins/claude-desktop/README.md#privacy"],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=22.13.0"
+    }
+  },
+  "user_config": {
+    "folder": {
+      "type": "directory",
+      "title": "Spreadsheet folder",
+      "description": "A folder of spreadsheets (.xlsx, .xlsm, .csv, .tsv). Each sheet becomes a table Claude can query. Showboard only reads them.",
+      "required": false
+    },
+    "database": {
+      "type": "string",
+      "title": "Database",
+      "description": "Or a Postgres URL, such as postgres://reader:secret@localhost:5432/shop, or the full path of a SQLite file. Used instead of the folder. Give it a user that can only read.",
+      "sensitive": true,
+      "required": false
+    }
+  }
+}

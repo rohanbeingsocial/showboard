@@ -26,9 +26,16 @@ describe("the plugin's server", () => {
 
   it("steps aside for the project's own Showboard, says how to set up without data, and otherwise serves", () => {
     const own = folder(JSON.stringify({ mcpServers: { showboard: { command: "npx", args: ["-y", "showboard", "mcp"] } } }));
-    expect(pluginIdle(own, true)).toEqual({ instructions: "" });
-    expect(pluginIdle(own, false)).toEqual({ instructions: "" });
-    expect(pluginIdle(folder(), false)).toEqual({ instructions: SETUP_INSTRUCTIONS });
-    expect(pluginIdle(folder(), true)).toBeNull();
+    expect(pluginIdle("claude-code", own, true)).toEqual({ instructions: "" });
+    expect(pluginIdle("claude-code", own, false)).toEqual({ instructions: "" });
+    expect(pluginIdle("claude-code", folder(), false)).toEqual({ instructions: SETUP_INSTRUCTIONS["claude-code"] });
+    expect(pluginIdle("claude-code", folder(), true)).toBeNull();
+  });
+
+  it("tells each app's person where its own settings are", () => {
+    expect(pluginIdle("claude-code", folder(), false)?.instructions).toMatch(/\/plugin.*Configure options/);
+    expect(pluginIdle("claude-code", folder(), false)?.instructions).not.toMatch(/Extensions/);
+    expect(pluginIdle("claude-desktop", folder(), false)?.instructions).toMatch(/Settings, then Extensions/);
+    expect(pluginIdle("claude-desktop", folder(), false)?.instructions).not.toMatch(/\/plugin|npx/);
   });
 });

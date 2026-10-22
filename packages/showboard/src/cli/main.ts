@@ -10,7 +10,7 @@ import { AGENTS, agentNames, pickAgents, writeAgent, type Launch } from "./agent
 import { formatReport, nodeHasSqlite, runDoctor, shellArg } from "./doctor.js";
 import { remoteBackend, runMcp, type ToolBackend } from "./mcp.js";
 import { runPane } from "./pane.js";
-import { noTools, pluginIdle } from "./plugin.js";
+import { noTools, PLUGIN_HOSTS, pluginIdle, type PluginHost } from "./plugin.js";
 
 const HELP = `showboard: a pen for your coding agent, to draw, show and do in your app
 
@@ -30,9 +30,9 @@ const HELP = `showboard: a pen for your coding agent, to draw, show and do in yo
   showboard mcp --url <http://localhost:3000/api/showboard>
       Only forward to a Showboard your own server mounts.
 
-  showboard mcp --plugin [--port 4711]
-      How the Claude Code plugin starts Showboard, on the data in SHOWBOARD_DATA or
-      SHOWBOARD_DB. It lists no tools in a folder whose .mcp.json starts its own Showboard,
+  showboard mcp --plugin <claude-code | claude-desktop> [--port 4711]
+      How the Claude Code plugin and the Claude desktop extension start Showboard, on the
+      data in SHOWBOARD_DATA or SHOWBOARD_DB. It lists no tools in a folder whose .mcp.json starts its own Showboard,
       and none until data is set (then it says how to set it).
 
   showboard pane [--url <http://127.0.0.1:4710>] [--once]
@@ -85,7 +85,7 @@ const { positionals, values } = parseArguments({
     locale: { type: "string" },
     once: { type: "boolean" },
     json: { type: "boolean" },
-    plugin: { type: "boolean" },
+    plugin: { type: "string" },
     help: { type: "boolean", short: "h" },
     version: { type: "boolean", short: "v" },
   },
@@ -196,7 +196,8 @@ async function main(): Promise<void> {
 
   if (command === "mcp") {
     console.log = console.error; // stdout carries the MCP protocol only
-    const idle = values.plugin ? pluginIdle(process.cwd(), Boolean(values.url || db || files.length)) : null;
+    if (values.plugin && !PLUGIN_HOSTS.includes(values.plugin as PluginHost)) throw new Error(`--plugin takes ${PLUGIN_HOSTS.join(" or ")}, not ${values.plugin}.`);
+    const idle = values.plugin ? pluginIdle(values.plugin as PluginHost, process.cwd(), Boolean(values.url || db || files.length)) : null;
     if (idle) {
       runMcp(noTools, idle.instructions, VERSION);
       return;

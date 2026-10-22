@@ -31,7 +31,7 @@ From a shell, `claude plugin install showboard --marketplace rohanbeingsocial/sh
 
 ## What it reads, sends and runs
 
-**It runs one program**: Showboard's MCP server, `npx -y showboard@0.4.0 mcp --plugin --port 4711`, which Claude Code starts with each session. The version is pinned, so an update to the plugin is the only way a different version runs. On first start, `npx` downloads that package from the npm registry; after that it runs from npm's cache.
+**It runs one program**: Showboard's MCP server, `npx -y showboard@0.4.0 mcp --plugin claude-code --port 4711`, which Claude Code starts with each session. The version is pinned, so an update to the plugin is the only way a different version runs. On first start, `npx` downloads that package from the npm registry; after that it runs from npm's cache.
 
 The server:
 
