@@ -1,0 +1,53 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.rohanbeingsocial/showboard",
+  "title": "Showboard",
+  "description": "Your coding agent answers with dashboards: charts and tables from read-only SQL, Excel and CSV.",
+  "repository": {
+    "url": "https://github.com/rohanbeingsocial/showboard",
+    "source": "github",
+    "subfolder": "packages/showboard"
+  },
+  "websiteUrl": "https://github.com/rohanbeingsocial/showboard#readme",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/rohanbeingsocial/showboard/main/plugins/claude-code/.claude-plugin/icon.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
+  ],
+  "version": "0.2.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "showboard",
+      "version": "0.2.1",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp"
+        },
+        {
+          "type": "positional",
+          "valueHint": "files",
+          "description": "Excel or CSV files, or folders of them, to answer questions about. Leave out to use SHOWBOARD_DB.",
+          "isRequired": false,
+          "isRepeated": true
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "SHOWBOARD_DB",
+          "description": "A Postgres URL or a SQLite file to answer questions about, opened read-only.",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
