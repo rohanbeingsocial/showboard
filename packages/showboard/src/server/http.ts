@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Reply, ScreenReport, ServerMessage } from "../spec/types.js";
+import { ask, type AskOptions } from "./ask.js";
 import type { Hub } from "./hub.js";
 import type { BoardStore } from "./store.js";
 import type { ToolDef } from "./tools.js";
@@ -16,6 +17,7 @@ import { viewerResponse } from "./viewer.js";
 //   GET  /tools          tool list, for the MCP bridge
 //   POST /tools/:name    run a tool
 //   GET  /health[?pane=…] up or not, and the board on screen; a polling pane names itself
+//   POST /ask            a question from the board page, answered by a model (when `ask` is set)
 //   GET  /               the built-in board page, when `viewer` is on
 //
 // It is meant for one person's machine. Browsers send an Origin header; POSTs from an
@@ -34,6 +36,8 @@ export interface HttpOptions {
   isAllowedHost?: (host: string) => boolean;
   /** Serve Showboard's own board page at the root, for use without an app. */
   viewer?: boolean;
+  /** A model API key for the board page's question box (see ask.ts). */
+  ask?: AskOptions;
 }
 
 export interface ToolCallResult {
@@ -57,6 +61,7 @@ const screenShape = z.object({
   boardId: z.string().nullable(),
 });
 const replyShape = z.object({ request: z.string(), ok: z.boolean(), result: z.unknown().optional(), error: z.string().optional() });
+const askShape = z.object({ question: z.string().trim().min(1).max(2000) });
 
 /**
  * A tool's input schema without the keywords some agents' model APIs turn away ($schema,
@@ -135,10 +140,14 @@ export function createHandler(deps: { hub: Hub; boards: BoardStore; tools: ToolD
       if (req.method === "POST" && path.startsWith("/tools/")) {
         return json(await callTool(tools, decodeURIComponent(path.slice("/tools/".length)), await readJson()));
       }
+      if (req.method === "POST" && path === "/ask" && options.ask) {
+        const { question } = askShape.parse(await readJson());
+        return json(await ask(question, tools, options.ask).catch((err: Error) => ({ error: err.message })));
+      }
       if (req.method === "GET" && path === "/health") {
         const pane = url.searchParams.get("pane");
         if (pane) hub.touch(pane.slice(0, 80));
-        return json({ ok: true, tabs: hub.connected, panes: hub.watching, board: hub.shown?.id ?? null, shows: hub.shows, page: options.viewer === true });
+        return json({ ok: true, tabs: hub.connected, panes: hub.watching, board: hub.shown?.id ?? null, shows: hub.shows, page: options.viewer === true, ...(options.ask ? { ask: true } : {}) });
       }
       if (req.method === "GET" && options.viewer) {
         const page = await viewerResponse(path);

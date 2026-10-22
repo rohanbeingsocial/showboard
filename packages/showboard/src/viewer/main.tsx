@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { createRoot } from "react-dom/client";
 import { Board, BoardList, ShowboardProvider, useShowboard } from "../react/index.js";
 import type { FormatOptions } from "../spec/format.js";
@@ -35,16 +35,20 @@ interface DataInfo {
   notes: string[];
   /** The data's currency and locale, e.g. rupees for spreadsheets written in ₹. */
   format?: FormatOptions;
+  /** Whether the server has a model key for the question box (see server/ask.ts). */
+  ask?: boolean;
 }
 
 function useDataInfo(): DataInfo {
   const [state, setState] = useState<DataInfo>({ tables: null, notes: [] });
   useEffect(() => {
+    const health = fetch(`${BASE}/health`).then((res) => res.json() as Promise<{ ask?: boolean }>);
     fetch(`${BASE}/tools/describe_data`, { method: "POST", headers: { "content-type": "application/json" }, body: "{}" })
       .then((res) => res.json() as Promise<{ content: string }>)
-      .then((res) => {
+      .then(async (res) => {
         const out = JSON.parse(res.content) as { database: { tables: TableSummary[]; notes?: string[] } | null; format?: FormatOptions };
-        setState({ tables: out.database?.tables ?? [], notes: out.database?.notes ?? [], format: out.format });
+        const ask = (await health.catch(() => ({ ask: false }))).ask === true;
+        setState({ tables: out.database?.tables ?? [], notes: out.database?.notes ?? [], format: out.format, ask });
       })
       .catch((err: Error) => setState({ tables: [], notes: [`Tables could not be listed: ${err.message}`] }));
   }, []);
@@ -73,6 +77,36 @@ function Tables({ tables, notes }: { tables: TableSummary[] | null; notes: strin
   );
 }
 
+/** A question for the model behind the server's key; its board arrives on the stream like any other. */
+function Ask() {
+  const [question, setQuestion] = useState("");
+  const [state, setState] = useState<{ busy: boolean; answer?: string; error?: string }>({ busy: false });
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    if (!question.trim() || state.busy) return;
+    setState({ busy: true });
+    try {
+      const res = await fetch(`${BASE}/ask`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question }) });
+      const out = (await res.json()) as { answer?: string; error?: string };
+      setState({ busy: false, answer: out.answer, error: out.error });
+    } catch (err) {
+      setState({ busy: false, error: (err as Error).message });
+    }
+  }
+  return (
+    <form className="sv-ask" onSubmit={submit}>
+      <div className="sv-ask-row">
+        <input value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Ask about your data, e.g. Which region sold the most?" aria-label="Question" maxLength={2000} />
+        <button type="submit" disabled={state.busy || !question.trim()}>
+          {state.busy ? "Drawing…" : "Ask"}
+        </button>
+      </div>
+      {state.answer ? <p className="sv-answer">{state.answer}</p> : null}
+      {state.error ? <p className="sb-error">{state.error}</p> : null}
+    </form>
+  );
+}
+
 function Viewer({ data }: { data: DataInfo }) {
   const { connected } = useShowboard();
   const dark = useDark();
@@ -82,12 +116,13 @@ function Viewer({ data }: { data: DataInfo }) {
         <span>Showboard</span>
         <span className={`sv-dot${connected ? " sv-on" : ""}`} title={connected ? "Connected" : "Not connected"} />
       </header>
+      {data.ask ? <Ask /> : null}
       <main className="sv-main">
         <Board
           className={dark ? "sb-dark" : ""}
           empty={
             <div className="sv-empty">
-              <h2>Ask your coding agent about your data</h2>
+              <h2>{data.ask ? "Ask a question above, or ask your coding agent" : "Ask your coding agent about your data"}</h2>
               <p className="sb-muted">Its boards appear here.</p>
             </div>
           }

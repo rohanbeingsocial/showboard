@@ -98,3 +98,43 @@ body {
 .sv-table code {
   font-size: 12px;
 }
+
+.sv-ask {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px 20px 0;
+  box-sizing: border-box;
+}
+.sv-ask-row {
+  display: flex;
+  gap: 8px;
+}
+.sv-ask input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font: inherit;
+  color: inherit;
+  background: var(--sv-panel);
+  border: 1px solid var(--sv-line);
+  border-radius: 8px;
+}
+.sv-ask button {
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--sv-bg);
+  background: var(--sv-fg);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.sv-ask button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.sv-answer {
+  margin: 10px 2px 0;
+  max-width: 78ch;
+  line-height: 1.5;
+}

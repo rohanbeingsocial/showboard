@@ -4,6 +4,7 @@ import { homedir } from "node:os";
 import { relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs, type ParseArgsConfig } from "node:util";
+import { askFromEnv } from "../server/ask.js";
 import { builderAgent, createShowboard, INSTRUCTIONS, serve, type Showboard } from "../server/index.js";
 import { AGENTS, agentNames, pickAgents, writeAgent, type Launch } from "./agents.js";
 import { formatReport, nodeHasSqlite, runDoctor, shellArg } from "./doctor.js";
@@ -166,11 +167,11 @@ async function main(): Promise<void> {
 
   if (command === "serve") {
     const board = await start();
-    await serve(board.handler({ viewer: true }), { port });
+    await serve(board.handler({ viewer: true, ask: askFromEnv() }), { port });
     const tables = (await board.db?.describe())?.length ?? 0;
     console.log(`showboard: ${files.length ? `${tables} table${tables === 1 ? "" : "s"} from your spreadsheets` : `${board.db?.kind ?? "no"} database`}, ${board.tools.length} tools`);
     for (const note of board.db?.notes?.() ?? []) console.log(`showboard: ${note}`);
-    console.log(`showboard: boards appear at ${page}`);
+    console.log(`showboard: boards appear at ${page}${askFromEnv() ? ", with a box to ask questions there" : ""}`);
     return;
   }
 
@@ -182,7 +183,7 @@ async function main(): Promise<void> {
     else {
       const board = await start();
       try {
-        await serve(board.handler({ viewer: true }), { port });
+        await serve(board.handler({ viewer: true, ask: askFromEnv() }), { port });
         console.error(`showboard: serving the browser bridge and board page on ${local}`);
       } catch (err) {
         throw new Error(`Port ${port} is taken by something that is not Showboard (${(err as Error).message}). Pass --port.`);
