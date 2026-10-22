@@ -17,7 +17,10 @@ Showboard is an open-source **MCP server** that lets **Claude Code**, Codex, Cur
 
 <br />
 
-<img src="docs/images/hero.gif" alt="Claude Code in a terminal beside Showboard's page in a browser. Asked for the best seller of 2026 and how it compares with last year, Claude calls Showboard's draw tool and a board appears: $462,088 of Aero Standing Desk revenue in 2026, $275,176 in the same months of 2025, 67.9% growth, a monthly revenue line, 2026 revenue by category and the top 5 products" width="100%" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.gif" />
+  <img src="docs/images/hero.gif" alt="Claude Code in a terminal beside Showboard's page in a browser. Asked for the best seller of 2026 and how it compares with last year, Claude calls Showboard's draw tool and a board appears: $462,088 of Aero Standing Desk revenue in 2026, $275,176 in the same months of 2025, 67.9% growth, a monthly revenue line, 2026 revenue by category and the top 5 products" width="100%" />
+</picture>
 
 <p align="center">
   <b>2.7× cheaper</b> &nbsp;·&nbsp; <b>3.5× fewer output tokens</b> &nbsp;·&nbsp; <b>3.2× faster</b>
@@ -126,13 +129,19 @@ The agent never types a figure into a chart: every number comes from a query, an
 
 ## Excel and CSV, no app needed
 
-<img src="docs/images/spreadsheets.gif" alt="Claude Code beside Showboard's page over a folder of Excel and CSV files. Asked which regions are behind their 2026 targets, Claude draws a board in rupees: actual against target by region, the gap to target for each region and the cumulative gap by month. Show sources then opens the SQL that joins the workbook's orders with the targets file" width="100%" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/spreadsheets-dark.gif" />
+  <img src="docs/images/spreadsheets.gif" alt="Claude Code beside Showboard's page over a folder of Excel and CSV files. Asked which regions are behind their 2026 targets, Claude draws a board in rupees: actual against target by region, the gap to target for each region and the cumulative gap by month. Show sources then opens the SQL that joins the workbook's orders with the targets file" width="100%" />
+</picture>
 
 A folder of spreadsheets is all it needs. Here Claude Code compares 2026 orders in an Excel workbook with targets in a CSV file, amounts in rupees, and *Show sources* opens the SQL behind a chart.
 
 ## Inside your own app
 
-<img src="docs/images/demo.gif" alt="Claude Code beside the demo shop's admin app. Asked to open the Aero Standing Desk's orders from October, Claude reads the app's screen with get_screen, then runs the app's filter_orders action, and the app moves from its board page to the Orders page, filtered to October 2026 and the Aero Standing Desk" width="100%" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.gif" />
+  <img src="docs/images/demo.gif" alt="Claude Code beside the demo shop's admin app. Asked to open the Aero Standing Desk's orders from October, Claude reads the app's screen with get_screen, then runs the app's filter_orders action, and the app moves from its board page to the Orders page, filtered to October 2026 and the Aero Standing Desk" width="100%" />
+</picture>
 
 Mount Showboard in your React app and the agent can also see what is on screen and run the actions you register. Here Claude reads the demo shop's screen with `get_screen`, then runs the shop's own `filter_orders` action, and the app opens its Orders page, filtered.
 
