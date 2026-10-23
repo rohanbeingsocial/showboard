@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "npm run build -w showboard && node plugins/claude-code/build.mjs",
-    "typecheck": "tsc -p packages/showboard --noEmit && tsc -p packages/showboard/tsconfig.viewer.json && tsc -p examples/sales-demo --noEmit",
+    "typecheck": "tsc -p packages/showboard --noEmit && tsc -p packages/showboard/tsconfig.viewer.json && tsc -p examples/sales-demo --noEmit && tsc -p examples/pages-demo --noEmit",
     "test": "vitest run",
     "test:pane": "node plugins/claude-code/build.mjs && claude plugin validate plugins/claude-code && claude plugin test plugins/claude-code",
     "demo": "npm run build && npm run start -w sales-demo"

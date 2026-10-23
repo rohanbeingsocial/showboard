@@ -1,0 +1,1121 @@
+[
+  {
+    "id": "split",
+    "ask": "How is 2026 revenue split by region so far? Show me.",
+    "showboard": {
+      "seconds": 20,
+      "cost": 0.079,
+      "tries": 4
+    },
+    "alone": {
+      "seconds": 66,
+      "cost": 0.187,
+      "tries": 4
+    },
+    "board": {
+      "id": "b_0e16b276",
+      "title": "2026 revenue by region (year to date)",
+      "spec": {
+        "root": "root",
+        "elements": {
+          "chart1": {
+            "type": "PieChart",
+            "props": {
+              "dataset": "share_of_revenue",
+              "label": "region",
+              "value": "revenue",
+              "title": "Share of revenue",
+              "format": "currency"
+            }
+          },
+          "table2": {
+            "type": "Table",
+            "props": {
+              "dataset": "revenue_share_and_orders",
+              "columns": [
+                {
+                  "field": "region",
+                  "label": "Region"
+                },
+                {
+                  "field": "revenue",
+                  "label": "Revenue",
+                  "format": "currency"
+                },
+                {
+                  "field": "share",
+                  "label": "Share",
+                  "format": "percent"
+                },
+                {
+                  "field": "orders",
+                  "label": "Orders",
+                  "format": "integer"
+                }
+              ],
+              "title": "Revenue, share and orders"
+            }
+          },
+          "row3": {
+            "type": "Grid",
+            "props": {
+              "columns": 2
+            },
+            "children": [
+              "chart1",
+              "table2"
+            ]
+          },
+          "chart4": {
+            "type": "LineChart",
+            "props": {
+              "dataset": "monthly_revenue_by_region",
+              "x": "month",
+              "y": [
+                "East",
+                "North",
+                "South",
+                "West"
+              ],
+              "title": "Monthly revenue by region",
+              "format": "currency"
+            }
+          },
+          "note5": {
+            "type": "Note",
+            "props": {
+              "text": "Covers all 1,030 orders from 1 Jan to 19 Oct 2026. October is only partly in, so the last point on the monthly chart will look low."
+            }
+          },
+          "root": {
+            "type": "Grid",
+            "props": {
+              "columns": 1
+            },
+            "children": [
+              "row3",
+              "chart4",
+              "note5"
+            ]
+          }
+        }
+      },
+      "datasets": {
+        "share_of_revenue": {
+          "name": "share_of_revenue",
+          "columns": [
+            {
+              "name": "region",
+              "type": "text"
+            },
+            {
+              "name": "revenue",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "region": "South",
+              "revenue": 11057740
+            },
+            {
+              "region": "North",
+              "revenue": 9423360
+            },
+            {
+              "region": "East",
+              "revenue": 5504730
+            },
+            {
+              "region": "West",
+              "revenue": 5292490
+            }
+          ],
+          "truncated": false,
+          "origin": "SELECT region, SUM(amount) AS revenue FROM sales_2026_orders GROUP BY region ORDER BY revenue DESC",
+          "at": "2026-10-21T05:02:49.044Z"
+        },
+        "revenue_share_and_orders": {
+          "name": "revenue_share_and_orders",
+          "columns": [
+            {
+              "name": "region",
+              "type": "text"
+            },
+            {
+              "name": "revenue",
+              "type": "number"
+            },
+            {
+              "name": "share",
+              "type": "number"
+            },
+            {
+              "name": "orders",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "region": "Total",
+              "revenue": 31278320,
+              "share": 1,
+              "orders": 1030
+            },
+            {
+              "region": "South",
+              "revenue": 11057740,
+              "share": 0.354,
+              "orders": 354
+            },
+            {
+              "region": "North",
+              "revenue": 9423360,
+              "share": 0.301,
+              "orders": 311
+            },
+            {
+              "region": "East",
+              "revenue": 5504730,
+              "share": 0.176,
+              "orders": 193
+            },
+            {
+              "region": "West",
+              "revenue": 5292490,
+              "share": 0.169,
+              "orders": 172
+            }
+          ],
+          "truncated": false,
+          "origin": "SELECT region, SUM(amount) AS revenue, ROUND(1.0*SUM(amount)/(SELECT SUM(amount) FROM sales_2026_orders),3) AS share, COUNT(*) AS orders FROM sales_2026_orders GROUP BY region UNION ALL SELECT 'Total', SUM(amount), 1.0, COUNT(*) FROM sales_2026_orders ORDER BY revenue DESC",
+          "at": "2026-10-21T05:02:49.045Z"
+        },
+        "monthly_revenue_by_region": {
+          "name": "monthly_revenue_by_region",
+          "columns": [
+            {
+              "name": "month",
+              "type": "text"
+            },
+            {
+              "name": "East",
+              "type": "number"
+            },
+            {
+              "name": "North",
+              "type": "number"
+            },
+            {
+              "name": "South",
+              "type": "number"
+            },
+            {
+              "name": "West",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "month": "2026-01-01",
+              "East": 320300,
+              "North": 991180,
+              "South": 834600,
+              "West": 682040
+            },
+            {
+              "month": "2026-02-01",
+              "East": 500700,
+              "North": 1339960,
+              "South": 1126450,
+              "West": 410320
+            },
+            {
+              "month": "2026-03-01",
+              "East": 549120,
+              "North": 926180,
+              "South": 1349580,
+              "West": 320080
+            },
+            {
+              "month": "2026-04-01",
+              "East": 574320,
+              "North": 1176500,
+              "South": 1359720,
+              "West": 422700
+            },
+            {
+              "month": "2026-05-01",
+              "East": 618830,
+              "North": 925140,
+              "South": 1305980,
+              "West": 688800
+            },
+            {
+              "month": "2026-06-01",
+              "East": 794060,
+              "North": 829400,
+              "South": 760340,
+              "West": 455160
+            },
+            {
+              "month": "2026-07-01",
+              "East": 629480,
+              "North": 868950,
+              "South": 1076870,
+              "West": 530010
+            },
+            {
+              "month": "2026-08-01",
+              "East": 499300,
+              "North": 1088020,
+              "South": 1034350,
+              "West": 858800
+            },
+            {
+              "month": "2026-09-01",
+              "East": 599280,
+              "North": 761770,
+              "South": 1594090,
+              "West": 524380
+            },
+            {
+              "month": "2026-10-01",
+              "East": 419340,
+              "North": 516260,
+              "South": 615760,
+              "West": 400200
+            }
+          ],
+          "truncated": false,
+          "origin": "SELECT strftime('%Y-%m-01', order_date) AS month, region, SUM(amount) AS revenue FROM sales_2026_orders GROUP BY 1,2 ORDER BY 1,2\n-- drawn as one revenue column per region",
+          "at": "2026-10-21T05:02:49.045Z"
+        }
+      },
+      "at": "2026-10-21T05:02:49.051Z"
+    }
+  },
+  {
+    "id": "trend",
+    "ask": "Show me monthly revenue in 2026, a line per region.",
+    "then": "Make it quarterly instead, as bars.",
+    "showboard": {
+      "seconds": 27,
+      "cost": 0.124,
+      "tries": 4
+    },
+    "alone": {
+      "seconds": 75,
+      "cost": 0.335,
+      "tries": 4
+    },
+    "board": {
+      "id": "b_4e672aa4",
+      "title": "Quarterly revenue by region, 2026",
+      "spec": {
+        "root": "root",
+        "elements": {
+          "chart1": {
+            "type": "BarChart",
+            "props": {
+              "dataset": "revenue_per_quarter",
+              "x": "quarter",
+              "y": [
+                "East",
+                "North",
+                "South",
+                "West"
+              ],
+              "title": "Revenue per quarter (₹)",
+              "format": "currency"
+            }
+          },
+          "note2": {
+            "type": "Note",
+            "props": {
+              "text": "Q4 is partial: orders run only through 19 Oct, so it covers under three weeks of the quarter.",
+              "tone": "info"
+            }
+          },
+          "root": {
+            "type": "Grid",
+            "props": {
+              "columns": 1
+            },
+            "children": [
+              "chart1",
+              "note2"
+            ]
+          }
+        }
+      },
+      "datasets": {
+        "revenue_per_quarter": {
+          "name": "revenue_per_quarter",
+          "columns": [
+            {
+              "name": "quarter",
+              "type": "text"
+            },
+            {
+              "name": "East",
+              "type": "number"
+            },
+            {
+              "name": "North",
+              "type": "number"
+            },
+            {
+              "name": "South",
+              "type": "number"
+            },
+            {
+              "name": "West",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "quarter": "Q1",
+              "East": 1370120,
+              "North": 3257320,
+              "South": 3310630,
+              "West": 1412440
+            },
+            {
+              "quarter": "Q2",
+              "East": 1987210,
+              "North": 2931040,
+              "South": 3426040,
+              "West": 1566660
+            },
+            {
+              "quarter": "Q3",
+              "East": 1728060,
+              "North": 2718740,
+              "South": 3705310,
+              "West": 1913190
+            },
+            {
+              "quarter": "Q4",
+              "East": 419340,
+              "North": 516260,
+              "South": 615760,
+              "West": 400200
+            }
+          ],
+          "truncated": false,
+          "origin": "SELECT 'Q' || ((CAST(substr(order_date,6,2) AS INTEGER)+2)/3) AS quarter, region, SUM(amount) AS revenue FROM sales_2026_orders WHERE substr(order_date,1,4) = :year GROUP BY 1,2 ORDER BY 1,2\n-- :year = \"2026\"\n-- drawn as one revenue column per region",
+          "at": "2026-10-21T05:04:35.472Z"
+        }
+      },
+      "at": "2026-10-21T05:04:35.478Z"
+    }
+  },
+  {
+    "id": "targets",
+    "ask": "Which regions are behind their 2026 targets so far, and by how much? Show me.",
+    "showboard": {
+      "seconds": 23,
+      "cost": 0.085,
+      "tries": 4
+    },
+    "alone": {
+      "seconds": 80,
+      "cost": 0.236,
+      "tries": 4
+    },
+    "board": {
+      "id": "b_73d338a5",
+      "title": "Regions vs 2026 targets — Jan to 2026-09 (completed months)",
+      "spec": {
+        "root": "root",
+        "elements": {
+          "table1": {
+            "type": "Table",
+            "props": {
+              "dataset": "year_to_date_actual_vs_target",
+              "columns": [
+                {
+                  "field": "region",
+                  "label": "Region"
+                },
+                {
+                  "field": "actual",
+                  "label": "Actual",
+                  "format": "currency"
+                },
+                {
+                  "field": "target",
+                  "label": "Target",
+                  "format": "currency"
+                },
+                {
+                  "field": "gap",
+                  "label": "Gap",
+                  "format": "currency"
+                },
+                {
+                  "field": "attainment",
+                  "label": "Attainment",
+                  "format": "percent"
+                }
+              ],
+              "title": "Year to date: actual vs target"
+            }
+          },
+          "chart2": {
+            "type": "BarChart",
+            "props": {
+              "dataset": "gap_to_target_negative_behind",
+              "x": "region",
+              "y": [
+                "gap"
+              ],
+              "title": "Gap to target (₹, negative = behind)",
+              "format": "currency"
+            }
+          },
+          "chart3": {
+            "type": "LineChart",
+            "props": {
+              "dataset": "cumulative_gap_to_target_by_month",
+              "x": "month",
+              "y": [
+                "East",
+                "North",
+                "South",
+                "West"
+              ],
+              "title": "Cumulative gap to target by month",
+              "format": "currency"
+            }
+          },
+          "root": {
+            "type": "Grid",
+            "props": {
+              "columns": 1
+            },
+            "children": [
+              "table1",
+              "chart2",
+              "chart3"
+            ]
+          }
+        }
+      },
+      "datasets": {
+        "year_to_date_actual_vs_target": {
+          "name": "year_to_date_actual_vs_target",
+          "columns": [
+            {
+              "name": "region",
+              "type": "text"
+            },
+            {
+              "name": "actual",
+              "type": "number"
+            },
+            {
+              "name": "target",
+              "type": "number"
+            },
+            {
+              "name": "gap",
+              "type": "number"
+            },
+            {
+              "name": "attainment",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "region": "North",
+              "actual": 8907100,
+              "target": 10766000,
+              "gap": -1858900,
+              "attainment": 0.827
+            },
+            {
+              "region": "West",
+              "actual": 4892290,
+              "target": 5242000,
+              "gap": -349710,
+              "attainment": 0.933
+            },
+            {
+              "region": "South",
+              "actual": 10441980,
+              "target": 10766000,
+              "gap": -324020,
+              "attainment": 0.97
+            },
+            {
+              "region": "East",
+              "actual": 5085390,
+              "target": 5242000,
+              "gap": -156610,
+              "attainment": 0.97
+            }
+          ],
+          "truncated": false,
+          "origin": "WITH a AS (SELECT region, sum(amount) actual FROM sales_2026_orders WHERE substr(order_date,1,7) <= :through GROUP BY region), t AS (SELECT region, sum(target) target FROM targets_2026 WHERE substr(month,1,7) <= :through GROUP BY region) SELECT t.region, a.actual, t.target, a.actual - t.target AS gap, round(1.0*a.actual/t.target,3) AS attainment FROM t JOIN a USING(region) ORDER BY gap\n-- :through = \"2026-09\"",
+          "at": "2026-10-21T05:06:20.905Z"
+        },
+        "gap_to_target_negative_behind": {
+          "name": "gap_to_target_negative_behind",
+          "columns": [
+            {
+              "name": "region",
+              "type": "text"
+            },
+            {
+              "name": "gap",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "region": "North",
+              "gap": -1858900
+            },
+            {
+              "region": "West",
+              "gap": -349710
+            },
+            {
+              "region": "South",
+              "gap": -324020
+            },
+            {
+              "region": "East",
+              "gap": -156610
+            }
+          ],
+          "truncated": false,
+          "origin": "WITH a AS (SELECT region, sum(amount) actual FROM sales_2026_orders WHERE substr(order_date,1,7) <= :through GROUP BY region), t AS (SELECT region, sum(target) target FROM targets_2026 WHERE substr(month,1,7) <= :through GROUP BY region) SELECT t.region, a.actual - t.target AS gap FROM t JOIN a USING(region) ORDER BY gap\n-- :through = \"2026-09\"",
+          "at": "2026-10-21T05:06:20.906Z"
+        },
+        "cumulative_gap_to_target_by_month": {
+          "name": "cumulative_gap_to_target_by_month",
+          "columns": [
+            {
+              "name": "month",
+              "type": "text"
+            },
+            {
+              "name": "East",
+              "type": "number"
+            },
+            {
+              "name": "North",
+              "type": "number"
+            },
+            {
+              "name": "South",
+              "type": "number"
+            },
+            {
+              "name": "West",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "month": "2026-01-01",
+              "East": -239700,
+              "North": -158820,
+              "South": -315400,
+              "West": 122040
+            },
+            {
+              "month": "2026-02-01",
+              "East": -305000,
+              "North": 19140,
+              "South": -350950,
+              "West": -33640
+            },
+            {
+              "month": "2026-03-01",
+              "East": -326880,
+              "North": -227680,
+              "South": -174370,
+              "West": -284560
+            },
+            {
+              "month": "2026-04-01",
+              "East": -329560,
+              "North": -236180,
+              "South": 350,
+              "West": -438860
+            },
+            {
+              "month": "2026-05-01",
+              "East": -292730,
+              "North": -507040,
+              "South": 110330,
+              "West": -332060
+            },
+            {
+              "month": "2026-06-01",
+              "East": -86670,
+              "North": -885640,
+              "South": -337330,
+              "West": -464900
+            },
+            {
+              "month": "2026-07-01",
+              "East": -51190,
+              "North": -1235690,
+              "South": -479460,
+              "West": -528890
+            },
+            {
+              "month": "2026-08-01",
+              "East": -150890,
+              "North": -1378670,
+              "South": -676110,
+              "West": -269090
+            },
+            {
+              "month": "2026-09-01",
+              "East": -156610,
+              "North": -1858900,
+              "South": -324020,
+              "West": -349710
+            }
+          ],
+          "truncated": false,
+          "origin": "WITH m AS (SELECT t.region, t.month, t.target, coalesce((SELECT sum(amount) FROM sales_2026_orders o WHERE o.region=t.region AND substr(o.order_date,1,7)=substr(t.month,1,7)),0) actual FROM targets_2026 t WHERE substr(t.month,1,7) <= :through) SELECT month, region, sum(actual - target) OVER (PARTITION BY region ORDER BY month) AS cumulative_gap FROM m ORDER BY month, region\n-- :through = \"2026-09\"\n-- drawn as one cumulative_gap column per region",
+          "at": "2026-10-21T05:06:20.906Z"
+        }
+      },
+      "at": "2026-10-21T05:06:20.915Z"
+    }
+  },
+  {
+    "id": "reps",
+    "ask": "Who are the top 5 sales reps by revenue this year, and when did each join? Show me.",
+    "showboard": {
+      "seconds": 22,
+      "cost": 0.077,
+      "tries": 4
+    },
+    "alone": {
+      "seconds": 72,
+      "cost": 0.213,
+      "tries": 4
+    },
+    "board": {
+      "id": "b_f25588c3",
+      "title": "Top 5 sales reps by revenue, 2026",
+      "spec": {
+        "root": "root",
+        "elements": {
+          "chart1": {
+            "type": "BarChart",
+            "props": {
+              "dataset": "revenue_by_rep",
+              "x": "sales_rep",
+              "y": [
+                "revenue"
+              ],
+              "title": "Revenue by rep",
+              "format": "currency"
+            }
+          },
+          "table2": {
+            "type": "Table",
+            "props": {
+              "dataset": "ranking_and_join_dates",
+              "columns": [
+                {
+                  "field": "rank",
+                  "label": "Rank",
+                  "format": "integer"
+                },
+                {
+                  "field": "sales_rep",
+                  "label": "Sales rep"
+                },
+                {
+                  "field": "region",
+                  "label": "Region"
+                },
+                {
+                  "field": "joined",
+                  "label": "Joined",
+                  "format": "date"
+                },
+                {
+                  "field": "revenue",
+                  "label": "Revenue",
+                  "format": "currency"
+                },
+                {
+                  "field": "orders",
+                  "label": "Orders",
+                  "format": "integer"
+                }
+              ],
+              "title": "Ranking and join dates"
+            }
+          },
+          "note3": {
+            "type": "Note",
+            "props": {
+              "text": "Revenue is the sum of order amounts from 1 Jan 2026 to the latest order on 19 Oct 2026. Karan Mehta, the sixth rep, is left out of the top 5. Join dates come from reps.csv.",
+              "tone": "info"
+            }
+          },
+          "root": {
+            "type": "Grid",
+            "props": {
+              "columns": 1
+            },
+            "children": [
+              "chart1",
+              "table2",
+              "note3"
+            ]
+          }
+        }
+      },
+      "datasets": {
+        "revenue_by_rep": {
+          "name": "revenue_by_rep",
+          "columns": [
+            {
+              "name": "sales_rep",
+              "type": "text"
+            },
+            {
+              "name": "revenue",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "sales_rep": "Asha Rao",
+              "revenue": 5798260
+            },
+            {
+              "sales_rep": "Divya Nair",
+              "revenue": 5504730
+            },
+            {
+              "sales_rep": "Vikram Shah",
+              "revenue": 5292490
+            },
+            {
+              "sales_rep": "Meera Iyer",
+              "revenue": 5259480
+            },
+            {
+              "sales_rep": "Rohit Gupta",
+              "revenue": 4874760
+            }
+          ],
+          "truncated": false,
+          "origin": "SELECT o.sales_rep, SUM(o.amount) AS revenue FROM sales_2026_orders o WHERE strftime('%Y', o.order_date) = :year GROUP BY o.sales_rep ORDER BY revenue DESC LIMIT :n\n-- :year = \"2026\", :n = 5",
+          "at": "2026-10-21T05:07:49.321Z"
+        },
+        "ranking_and_join_dates": {
+          "name": "ranking_and_join_dates",
+          "columns": [
+            {
+              "name": "rank",
+              "type": "number"
+            },
+            {
+              "name": "sales_rep",
+              "type": "text"
+            },
+            {
+              "name": "region",
+              "type": "text"
+            },
+            {
+              "name": "joined",
+              "type": "text"
+            },
+            {
+              "name": "revenue",
+              "type": "number"
+            },
+            {
+              "name": "orders",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "rank": 1,
+              "sales_rep": "Asha Rao",
+              "region": "South",
+              "joined": "2022-02-14",
+              "revenue": 5798260,
+              "orders": 175
+            },
+            {
+              "rank": 2,
+              "sales_rep": "Divya Nair",
+              "region": "East",
+              "joined": "2023-05-28",
+              "revenue": 5504730,
+              "orders": 193
+            },
+            {
+              "rank": 3,
+              "sales_rep": "Vikram Shah",
+              "region": "West",
+              "joined": "2021-07-03",
+              "revenue": 5292490,
+              "orders": 172
+            },
+            {
+              "rank": 4,
+              "sales_rep": "Meera Iyer",
+              "region": "South",
+              "joined": "2024-09-21",
+              "revenue": 5259480,
+              "orders": 179
+            },
+            {
+              "rank": 5,
+              "sales_rep": "Rohit Gupta",
+              "region": "North",
+              "joined": "2025-08-17",
+              "revenue": 4874760,
+              "orders": 161
+            }
+          ],
+          "truncated": false,
+          "origin": "SELECT RANK() OVER (ORDER BY SUM(o.amount) DESC) AS rank, o.sales_rep, r.region, r.joined, SUM(o.amount) AS revenue, COUNT(*) AS orders FROM sales_2026_orders o LEFT JOIN reps r ON r.sales_rep = o.sales_rep WHERE strftime('%Y', o.order_date) = :year GROUP BY o.sales_rep ORDER BY revenue DESC LIMIT :n\n-- :year = \"2026\", :n = 5",
+          "at": "2026-10-21T05:07:49.322Z"
+        }
+      },
+      "at": "2026-10-21T05:07:49.328Z"
+    }
+  },
+  {
+    "id": "margin",
+    "ask": "Which products make the most money after cost? Show me the top 5 by margin.",
+    "showboard": {
+      "seconds": 20,
+      "cost": 0.079,
+      "tries": 4
+    },
+    "alone": {
+      "seconds": 71,
+      "cost": 0.221,
+      "tries": 4
+    },
+    "board": {
+      "id": "b_512dfff0",
+      "title": "Top 5 products by gross margin, 2026 YTD",
+      "spec": {
+        "root": "root",
+        "elements": {
+          "chart1": {
+            "type": "BarChart",
+            "props": {
+              "dataset": "gross_margin_revenue_units_unit_co",
+              "x": "product",
+              "y": [
+                "margin"
+              ],
+              "title": "Gross margin (revenue − units × unit cost)",
+              "format": "currency"
+            }
+          },
+          "table2": {
+            "type": "Table",
+            "props": {
+              "dataset": "details",
+              "columns": [
+                {
+                  "field": "product",
+                  "label": "Product"
+                },
+                {
+                  "field": "category",
+                  "label": "Category"
+                },
+                {
+                  "field": "units",
+                  "label": "Units",
+                  "format": "integer"
+                },
+                {
+                  "field": "revenue",
+                  "label": "Revenue",
+                  "format": "currency"
+                },
+                {
+                  "field": "cost",
+                  "label": "Cost",
+                  "format": "currency"
+                },
+                {
+                  "field": "margin",
+                  "label": "Margin",
+                  "format": "currency"
+                },
+                {
+                  "field": "margin_pct",
+                  "label": "Margin pct",
+                  "format": "percent"
+                }
+              ],
+              "title": "Details"
+            }
+          },
+          "note3": {
+            "type": "Note",
+            "props": {
+              "text": "Margin uses the actual order amount, so discounts are counted (253 of 1,030 orders sold below list price). Cost is units × unit cost from the Products sheet. Orders run 1 Jan to 19 Oct 2026.",
+              "tone": "info"
+            }
+          },
+          "root": {
+            "type": "Grid",
+            "props": {
+              "columns": 1
+            },
+            "children": [
+              "chart1",
+              "table2",
+              "note3"
+            ]
+          }
+        }
+      },
+      "datasets": {
+        "gross_margin_revenue_units_unit_co": {
+          "name": "gross_margin_revenue_units_unit_co",
+          "columns": [
+            {
+              "name": "product",
+              "type": "text"
+            },
+            {
+              "name": "margin",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "product": "Lift Desk",
+              "margin": 3376000
+            },
+            {
+              "product": "Oak Desk",
+              "margin": 2397600
+            },
+            {
+              "product": "Ergo Chair",
+              "margin": 2395800
+            },
+            {
+              "product": "File Cabinet",
+              "margin": 1338300
+            },
+            {
+              "product": "Mesh Stool",
+              "margin": 986160
+            }
+          ],
+          "truncated": false,
+          "origin": "SELECT o.product, SUM(o.amount - o.qty*p.unit_cost) AS margin FROM sales_2026_orders o JOIN sales_2026_products p ON p.product=o.product GROUP BY o.product ORDER BY margin DESC LIMIT 5",
+          "at": "2026-10-21T05:09:35.940Z"
+        },
+        "details": {
+          "name": "details",
+          "columns": [
+            {
+              "name": "product",
+              "type": "text"
+            },
+            {
+              "name": "category",
+              "type": "text"
+            },
+            {
+              "name": "units",
+              "type": "number"
+            },
+            {
+              "name": "revenue",
+              "type": "number"
+            },
+            {
+              "name": "cost",
+              "type": "number"
+            },
+            {
+              "name": "margin",
+              "type": "number"
+            },
+            {
+              "name": "margin_pct",
+              "type": "number"
+            }
+          ],
+          "rows": [
+            {
+              "product": "Lift Desk",
+              "category": "Desks",
+              "units": 208,
+              "revenue": 9720000,
+              "cost": 6344000,
+              "margin": 3376000,
+              "margin_pct": 0.347
+            },
+            {
+              "product": "Oak Desk",
+              "category": "Desks",
+              "units": 196,
+              "revenue": 6121600,
+              "cost": 3724000,
+              "margin": 2397600,
+              "margin_pct": 0.392
+            },
+            {
+              "product": "Ergo Chair",
+              "category": "Seating",
+              "units": 401,
+              "revenue": 5684000,
+              "cost": 3288200,
+              "margin": 2395800,
+              "margin_pct": 0.421
+            },
+            {
+              "product": "File Cabinet",
+              "category": "Storage",
+              "units": 402,
+              "revenue": 4313100,
+              "cost": 2974800,
+              "margin": 1338300,
+              "margin_pct": 0.31
+            },
+            {
+              "product": "Mesh Stool",
+              "category": "Seating",
+              "units": 497,
+              "revenue": 2029860,
+              "cost": 1043700,
+              "margin": 986160,
+              "margin_pct": 0.486
+            }
+          ],
+          "truncated": false,
+          "origin": "SELECT o.product, p.category, SUM(o.qty) AS units, SUM(o.amount) AS revenue, SUM(o.qty*p.unit_cost) AS cost, SUM(o.amount - o.qty*p.unit_cost) AS margin, ROUND(1.0*SUM(o.amount - o.qty*p.unit_cost)/SUM(o.amount),3) AS margin_pct FROM sales_2026_orders o JOIN sales_2026_products p ON p.product=o.product GROUP BY o.product ORDER BY margin DESC LIMIT 5",
+          "at": "2026-10-21T05:09:35.941Z"
+        }
+      },
+      "at": "2026-10-21T05:09:35.946Z"
+    }
+  }
+]
