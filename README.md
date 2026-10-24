@@ -138,12 +138,19 @@ Mount Showboard in your Node server and React pages: see [Put boards in your own
 
 ## How it works
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/architecture-dark.png" />
+  <img src="docs/images/architecture.png" alt="How a question becomes a board. You ask your agent (Claude Code, Codex, Cursor, Gemini CLI) a question. The agent sends SQL to Showboard over MCP. Showboard, on your computer, runs it read-only against your data (Postgres, SQLite, Excel, CSV) and gets rows back, picks the charts and sends the board live to your screen: a browser, your React app or a terminal pane. The rows also go back to the agent. You see the board, and every chart can show its SQL" width="880" />
+</picture>
+
 1. **You ask** your agent a question, like *"Which regions are behind their 2026 targets?"*
 2. **The agent calls Showboard** over MCP: a saved recipe if one fits, or `draw` with one SQL query per chart.
 3. **Showboard draws the board.** It runs each query read-only, picks a chart from the shape of each result and lays out the board.
 4. **The board appears** on your screen and joins the saved boards. The agent gets the rows back, so it can check what it tells you.
 
 The agent never types a figure into a chart: every number comes from a query, and every chart can show its SQL. Think of Showboard as a pen for your agent, with two limits on purpose: in your app it draws only where you give it room, and it acts only through the actions you register, never by clicking around your screen.
+
+For the full picture, with where each part lives in the code, see [How Showboard works](docs/architecture.md).
 
 ## Excel and CSV, no app needed
 
