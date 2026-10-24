@@ -73,14 +73,14 @@ body {
 }
 
 .pd-hero {
-  padding-top: 64px;
+  padding-top: 48px;
   padding-bottom: 56px;
 }
 .pd-hero h1 {
   display: flex;
   flex-direction: column;
   margin: 0;
-  font-size: clamp(36px, 5.2vw, 64px);
+  font-size: clamp(36px, 4.6vw, 60px);
   font-weight: 600;
   line-height: 1.04;
   letter-spacing: -0.04em;
@@ -88,83 +88,63 @@ body {
 .pd-dim {
   color: var(--pd-muted);
 }
-.pd-hero p {
-  max-width: 50ch;
-  text-wrap: pretty;
-  margin: 24px 0 0;
+/* The pitch on the left, the install command beside it, so it's on the first screen. */
+.pd-hero-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 48px;
+  align-items: end;
+  margin-top: 32px;
+}
+.pd-hero-row > p {
+  max-width: 44ch;
+  margin: 0;
   font-size: 18px;
   line-height: 1.5;
+  text-wrap: pretty;
   color: var(--pd-muted);
 }
-
-.pd-demo {
-  display: grid;
-  grid-template-columns: 248px minmax(0, 1fr);
-  gap: 48px;
-  align-items: start;
+.pd-get .pd-fine {
+  max-width: 62ch;
+  margin-top: 12px;
+}
+.pd-fine {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--pd-muted);
+}
+.pd-fine a {
+  text-underline-offset: 2px;
 }
 
-.pd-side {
-  position: sticky;
-  top: 24px;
+.pd-demo-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 32px;
+  padding-top: 32px;
+  margin-bottom: 36px;
+  border-top: 1px solid var(--pd-line);
+}
+.pd-demo-head h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
 }
 .pd-files {
-  margin: 0 0 20px;
+  margin: 8px 0 0;
   font-size: 13px;
-  line-height: 1.6;
   color: var(--pd-muted);
 }
 .pd-files code {
   font-size: 12px;
   color: var(--pd-ink);
 }
-.pd-qs {
-  display: flex;
-  flex-direction: column;
-}
-.pd-q {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 11px 0 11px 18px;
-  border-left: 2px solid var(--pd-line);
-  font-size: 15px;
-  line-height: 1.45;
-  text-wrap: pretty;
-  color: var(--pd-muted);
-  text-decoration: none;
-  transition: color 0.15s, border-color 0.15s;
-}
-.pd-q:hover {
-  color: var(--pd-ink);
-}
-.pd-q:focus-visible {
-  outline: 2px solid var(--pd-orange);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-.pd-q[aria-current="true"] {
-  color: var(--pd-ink);
-  border-left-color: var(--pd-orange);
-}
-.pd-then {
-  font-size: 13px;
-  color: var(--pd-muted);
-}
-.pd-fine {
-  margin: 20px 0 0;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--pd-muted);
-}
-
-.pd-answer {
-  min-width: 0;
-}
 .pd-stats {
   display: flex;
   gap: 40px;
-  margin-bottom: 28px;
 }
 .pd-stat {
   display: flex;
@@ -193,6 +173,64 @@ body {
   color: var(--pd-muted);
 }
 
+/* The questions down the left, the board Claude drew for the chosen one on the right. */
+.pd-demo-body {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+.pd-qs {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.pd-q {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0 12px 18px;
+  border-left: 2px solid var(--pd-line);
+  font-size: 15px;
+  line-height: 1.45;
+  text-wrap: pretty;
+  color: var(--pd-muted);
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+}
+.pd-q:first-child {
+  padding-top: 0;
+}
+.pd-q:hover {
+  color: var(--pd-ink);
+}
+.pd-q:focus-visible {
+  outline: 2px solid var(--pd-orange);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.pd-q[aria-current="true"] {
+  color: var(--pd-ink);
+  border-left-color: var(--pd-orange);
+}
+.pd-then {
+  font-size: 13px;
+  color: var(--pd-muted);
+}
+.pd-time {
+  margin-top: 2px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--pd-muted);
+}
+.pd-q[aria-current="true"] .pd-time-with {
+  color: var(--pd-ink);
+  font-weight: 550;
+}
+.pd-board {
+  min-width: 0;
+}
 /* The board, themed through its --sb-* variables to sit on the page. */
 .pd-board .sb-board {
   --sb-bg: transparent;
@@ -227,42 +265,26 @@ body {
   }
 }
 
-.pd-try {
-  margin-top: 120px;
-  padding-top: 56px;
-  padding-bottom: 96px;
-  border-top: 1px solid var(--pd-line);
-}
-.pd-try h2 {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 600;
-  letter-spacing: -0.035em;
-}
-.pd-try > p:first-of-type {
-  max-width: 52ch;
-  margin: 12px 0 24px;
-  font-size: 16px;
-  line-height: 1.55;
-  color: var(--pd-muted);
-}
 .pd-cmd {
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 640px;
   padding: 6px 6px 6px 18px;
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
   border-radius: 12px;
 }
+/* One line where it fits; on a phone it wraps between words rather than hide its end. */
 .pd-cmd code {
   flex: 1;
   min-width: 0;
   overflow-x: auto;
-  white-space: nowrap;
   font-size: 14px;
+  line-height: 1.5;
   scrollbar-width: none;
+}
+.pd-word {
+  white-space: nowrap;
 }
 .pd-cmd button {
   padding: 9px 16px;
@@ -284,26 +306,73 @@ body {
   outline-offset: 2px;
 }
 
+.pd-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 32px;
+  margin-top: 96px;
+  padding-top: 24px;
+  padding-bottom: 40px;
+  border-top: 1px solid var(--pd-line);
+  font-size: 13px;
+  color: var(--pd-muted);
+}
+.pd-foot p {
+  margin: 0;
+}
+
+/* Narrow laptops: the install command goes under the pitch. */
+@media (max-width: 1100px) {
+  .pd-hero-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .pd-get {
+    max-width: 680px;
+  }
+}
+
 /* Phones and narrow windows: one column, the questions as a row you swipe through. */
 @media (max-width: 900px) {
   .pd-wrap {
     padding: 0 20px;
   }
   .pd-hero {
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding-top: 32px;
+    padding-bottom: 48px;
   }
-  .pd-hero p {
+  .pd-hero-row {
+    margin-top: 20px;
+  }
+  .pd-hero-row > p {
     font-size: 16px;
   }
-  .pd-demo {
+  .pd-cmd code {
+    font-size: 13px;
+  }
+  .pd-demo-head {
+    flex-direction: column;
+    align-items: start;
+    gap: 20px;
+    padding-top: 32px;
+    margin-bottom: 24px;
+  }
+  .pd-demo-head h2 {
+    font-size: 20px;
+  }
+  .pd-stats {
+    gap: 28px;
+  }
+  .pd-stat-value {
+    font-size: 22px;
+  }
+  .pd-demo-body {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
-  .pd-side {
-    position: static;
-  }
   .pd-qs {
+    position: static;
     flex-direction: row;
     gap: 16px;
     margin: 0 -20px;
@@ -313,7 +382,8 @@ body {
     scroll-padding-inline: 20px;
     scrollbar-width: none;
   }
-  .pd-q {
+  .pd-q,
+  .pd-q:first-child {
     flex: 0 0 240px;
     scroll-snap-align: start;
     padding: 12px 0 0;
@@ -323,18 +393,9 @@ body {
   .pd-q[aria-current="true"] {
     border-top-color: var(--pd-orange);
   }
-  .pd-stats {
-    gap: 28px;
-  }
-  .pd-stat-value {
-    font-size: 22px;
-  }
-  .pd-try {
-    margin-top: 72px;
-    padding-top: 40px;
-    padding-bottom: 64px;
-  }
-  .pd-try h2 {
-    font-size: 26px;
+  .pd-foot {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 64px;
   }
 }
