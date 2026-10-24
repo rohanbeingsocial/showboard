@@ -9,6 +9,7 @@ Showboard is an open-source **MCP server** that lets **Claude Code**, Codex, Cur
 [![MCP server](https://img.shields.io/badge/MCP-server-ff5a36?style=flat-square&logo=modelcontextprotocol&logoColor=white)](#works-with-your-agent)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2f6feb?style=flat-square)](LICENSE)
 [![Node.js 22.13 or later](https://img.shields.io/badge/node-%E2%89%A522.13-5fa04e?style=flat-square&logo=nodedotjs&logoColor=white)](#quick-start)
+[![Listed on mcpservers.org](https://img.shields.io/badge/listed_on-mcpservers.org-2563eb?style=flat-square)](https://mcpservers.org/servers/rohanbeingsocial/showboard)
 
 **[Live demo](https://rohanbeingsocial.github.io/showboard/)** &nbsp;·&nbsp; **[Quick start](#quick-start)** &nbsp;·&nbsp; **[How it works](#how-it-works)** &nbsp;·&nbsp; **[Benchmark](#benchmark)** &nbsp;·&nbsp; **[Docs](docs/reference.md)**
 
