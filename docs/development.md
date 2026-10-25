@@ -1,8 +1,8 @@
 # Development and contributing
 
-[Documentation](README.md) ? [Product overview](../README.md)
+[Documentation](README.md) · [Product overview](../README.md)
 
-[Contributing](#contributing) ? [License](#license)
+[Contributing](#contributing) · [License](#license)
 
 ## Contributing
 

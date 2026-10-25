@@ -1,8 +1,8 @@
 # Integrate Showboard into your app
 
-[Documentation](README.md) ? [Product overview](../README.md)
+[Documentation](README.md) · [Product overview](../README.md)
 
-[Put boards in your own app](#put-boards-in-your-own-app) ? [Tools your agent gets](#tools-your-agent-gets) ? [API](#api)
+[Put boards in your own app](#put-boards-in-your-own-app) · [Tools your agent gets](#tools-your-agent-gets) · [API](#api)
 
 ## Put boards in your own app
 

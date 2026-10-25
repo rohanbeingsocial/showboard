@@ -1,8 +1,8 @@
 # Evaluate Showboard
 
-[Documentation](README.md) ? [Product overview](../README.md)
+[Documentation](README.md) · [Product overview](../README.md)
 
-[Why Showboard](#why-showboard) ? [Benchmark](#benchmark) ? [How it works](#how-it-works) ? [Features](#features) ? [Safety](#safety) ? [Limits](#limits) ? [FAQ](#faq) ? [Roadmap](#roadmap)
+[Why Showboard](#why-showboard) · [Benchmark](#benchmark) · [How it works](#how-it-works) · [Features](#features) · [Safety](#safety) · [Limits](#limits) · [FAQ](#faq) · [Roadmap](#roadmap)
 
 ## Why Showboard
 

@@ -1,8 +1,8 @@
 # Showboard in use
 
-[Documentation](README.md) ? [Product overview](../README.md)
+[Documentation](README.md) · [Product overview](../README.md)
 
-[Excel and CSV, no app needed](#excel-and-csv-no-app-needed) ? [In a real app](#in-a-real-app) ? [Inside your own app](#inside-your-own-app)
+[Excel and CSV, no app needed](#excel-and-csv-no-app-needed) · [In a real app](#in-a-real-app) · [Inside your own app](#inside-your-own-app)
 
 ## Excel and CSV, no app needed
 

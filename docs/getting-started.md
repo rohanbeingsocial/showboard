@@ -1,8 +1,8 @@
 # Setup and agent compatibility
 
-[Documentation](README.md) ? [Product overview](../README.md)
+[Documentation](README.md) · [Product overview](../README.md)
 
-[Quick start](#quick-start) ? [Beside your terminal](#beside-your-terminal) ? [Works with your agent](#works-with-your-agent)
+[Quick start](#quick-start) · [Beside your terminal](#beside-your-terminal) · [Works with your agent](#works-with-your-agent)
 
 ## Quick start
 
