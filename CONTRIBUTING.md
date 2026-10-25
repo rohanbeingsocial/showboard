@@ -24,7 +24,7 @@ npm run test:pane    # if you changed plugins/claude-code or packages/showboard/
 npm run demo         # try it in the demo shop at http://localhost:4710
 ```
 
-The tests are in `packages/showboard/test`, and the folders are described in the [README](README.md#contributing).
+The tests are in `packages/showboard/test`, and the folders are described in the [development guide](docs/development.md#contributing).
 
 ## Pull requests
 

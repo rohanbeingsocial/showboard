@@ -12,4 +12,4 @@ Fixes go into the latest release on [npm](https://www.npmjs.com/package/showboar
 
 ## What Showboard promises
 
-Your agent can read your data, but not change it: queries are read-only, the HTTP handler answers only `localhost`, and in your app the agent can run only the actions you register. The details are in the README's [Safety](README.md#safety) section. A way around any of these is a security problem worth reporting.
+Your agent can read your data, but not change it: queries are read-only, the HTTP handler answers only `localhost`, and in your app the agent can run only the actions you register. The details are in the evaluation guide's [Safety](docs/evaluation.md#safety) section. A way around any of these is a security problem worth reporting.

@@ -2,6 +2,8 @@
 
 # How Showboard works
 
+[Documentation](README.md) · [Evaluation guide](evaluation.md) · [Integration examples](integration.md)
+
 What happens between a question in your terminal and a board on your screen, and where each part lives in the code. The [README](../README.md) covers what Showboard is and how to start; the [reference](reference.md) covers every option, tool and command.
 
 <picture>
@@ -56,4 +58,4 @@ The server answers only `localhost` and `127.0.0.1`, and refuses requests from o
 
 - **The numbers can be trusted.** The agent never types a figure into a chart. Charts, tables and headline numbers read query results, and each one can show its SQL. Only notes are the agent's own words.
 - **It is cheaper and faster.** The agent sends a short `draw` call instead of writing Python and an HTML page. On the same 5 questions it cost $1.78 against $4.77 and took 7.5 minutes against 24.3. See the [benchmark](../bench/README.md).
-- **It cannot change anything.** Queries are read-only, one `SELECT` at a time, with time and row limits. In your app, the agent runs only the actions you register. See [Safety](../README.md#safety).
+- **It cannot change anything.** Queries are read-only, one `SELECT` at a time, with time and row limits. In your app, the agent runs only the actions you register. See [Safety](evaluation.md#safety).

@@ -4,6 +4,8 @@
 
 Every option, prop, tool and command. The [README](../README.md) covers what Showboard is and how to start.
 
+For worked examples, use the [integration guide](integration.md). For compatibility, tradeoffs and safety boundaries, start at the [documentation index](README.md).
+
 - [Server](#server): `createShowboard`, the handler, sources, recipes
 - [Browser](#browser): `ShowboardProvider`, `Board`, hooks, your own components
 - [Boards](#boards): items, how a chart is picked, components, number formats, the long form
@@ -254,7 +256,7 @@ Details:
 
 ### What draw returns
 
-For the [README's example board](../README.md#put-boards-in-your-own-app) (under *More examples*):
+For the [integration guide's example board](integration.md#put-boards-in-your-own-app) (under *More examples*):
 
 ```json
 {
