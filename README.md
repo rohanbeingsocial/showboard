@@ -11,6 +11,7 @@ See the SQL behind every chart, and ask a follow-up to explore further.
 [![License: MIT](https://img.shields.io/badge/license-MIT-2f6feb?style=flat-square)](LICENSE)
 [![Node.js 22.13 or later](https://img.shields.io/badge/node-%E2%89%A522.13-5fa04e?style=flat-square&logo=nodedotjs&logoColor=white)](#quick-start)
 [![Listed on mcpservers.org](https://img.shields.io/badge/listed_on-mcpservers.org-2563eb?style=flat-square)](https://mcpservers.org/servers/rohanbeingsocial/showboard)
+[![Showboard MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/rohanbeingsocial/showboard/badges/score.svg)](https://glama.ai/mcp/servers/rohanbeingsocial/showboard)
 
 **[Explore the demo](https://rohanbeingsocial.github.io/showboard/)** &nbsp;·&nbsp; **[Get started](#quick-start)** &nbsp;·&nbsp; **[Documentation](docs/README.md)**
 
