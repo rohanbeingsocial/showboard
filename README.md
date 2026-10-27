@@ -7,15 +7,7 @@
 Ask a question. Showboard runs read-only queries and draws the charts.<br />
 See the SQL behind every chart, and ask a follow-up to explore further.
 
-[![MCP server](https://img.shields.io/badge/MCP-server-ff5a36?style=flat-square&logo=modelcontextprotocol&logoColor=white)](#works-with-your-agent)
-[![License: MIT](https://img.shields.io/badge/license-MIT-2f6feb?style=flat-square)](LICENSE)
-[![Node.js 22.13 or later](https://img.shields.io/badge/node-%E2%89%A522.13-5fa04e?style=flat-square&logo=nodedotjs&logoColor=white)](#quick-start)
-[![Listed on mcpservers.org](https://img.shields.io/badge/listed_on-mcpservers.org-2563eb?style=flat-square)](https://mcpservers.org/servers/rohanbeingsocial/showboard)
-[![Showboard MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/rohanbeingsocial/showboard/badges/score.svg)](https://glama.ai/mcp/servers/rohanbeingsocial/showboard)
-
 **[Explore the demo](https://rohanbeingsocial.github.io/showboard/)** &nbsp;·&nbsp; **[Get started](#quick-start)** &nbsp;·&nbsp; **[Documentation](docs/README.md)**
-
-<sub>Open source · MIT licensed · Runs on your computer · Also works with Codex, Cursor and other MCP-compatible agents</sub>
 
 <br />
 
@@ -31,6 +23,14 @@ See the SQL behind every chart, and ask a follow-up to explore further.
 
 One question becomes a dashboard of headline numbers, charts and tables,<br />
 in your browser, beside your terminal or inside your app.
+
+[![MCP server](https://img.shields.io/badge/MCP-server-ff5a36?style=flat-square&logo=modelcontextprotocol&logoColor=white)](#works-with-your-agent)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2f6feb?style=flat-square)](LICENSE)
+[![Node.js 22.13 or later](https://img.shields.io/badge/node-%E2%89%A522.13-5fa04e?style=flat-square&logo=nodedotjs&logoColor=white)](#quick-start)
+[![Listed on mcpservers.org](https://img.shields.io/badge/listed_on-mcpservers.org-2563eb?style=flat-square)](https://mcpservers.org/servers/rohanbeingsocial/showboard)
+[![Showboard MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/rohanbeingsocial/showboard/badges/score.svg)](https://glama.ai/mcp/servers/rohanbeingsocial/showboard)
+
+<sub>Open source · MIT licensed · Runs on your computer · Also works with Codex, Cursor and other MCP-compatible agents</sub>
 
 **[Star Showboard to follow updates.](https://github.com/rohanbeingsocial/showboard)**
 
@@ -61,19 +61,34 @@ Without Showboard, a chart request can become a coding task: read files, calcula
 
 You need **Node.js 22.13+** and a coding agent. Start with a folder of Excel or CSV files, a SQLite database, or a Postgres connection.
 
-**1. In your project, paste this into your agent:**
+**1. In Claude Code, install the plugin:**
 
 ```text
-Set up Showboard in this project: run npx showboard guide and follow it.
+/plugin install showboard --marketplace rohanbeingsocial/showboard
 ```
 
-The guide walks your agent through setup and checks the connection with `showboard doctor`.
+Choose your data folder or database when prompted. [Plugin instructions](plugins/claude-code).
 
 **2. Ask about your data:**
 
 > Which products brought in the most revenue, and how did that change month by month?
 
-**3. See the board** at http://localhost:4710, or run `npx showboard pane` in a terminal beside your agent.
+**3. See the board** in a pane beside the chat (type `/board` to open it) and at http://localhost:4711.
+
+<details>
+<summary><b>Using Codex, Cursor or another agent?</b></summary>
+
+<br />
+
+In your project, paste this into your agent:
+
+```text
+Set up Showboard in this project: run npx showboard guide and follow it.
+```
+
+The guide walks your agent through setup and checks the connection with `showboard doctor`. Boards open at http://localhost:4710, or run `npx showboard pane` in a terminal beside your agent.
+
+</details>
 
 <details>
 <summary><b>Prefer to set it up yourself?</b></summary>
@@ -100,17 +115,9 @@ For Postgres credentials, use the `SHOWBOARD_DB` environment variable instead of
 </details>
 
 <details>
-<summary><b>Install the Claude Code plugin or Claude desktop extension</b></summary>
+<summary><b>Install the Claude desktop extension</b></summary>
 
 <br />
-
-In a Claude Code session:
-
-```text
-/plugin install showboard --marketplace rohanbeingsocial/showboard
-```
-
-Choose your data folder or database when prompted. Plugin boards open at http://localhost:4711. [Plugin instructions](plugins/claude-code).
 
 For the Claude desktop app, download the `.mcpb` extension from the [latest release](https://github.com/rohanbeingsocial/showboard/releases/latest). Install it through **Settings → Extensions → Advanced settings → Install Extension**. This path does not require a separate Node.js installation. [Desktop instructions](plugins/claude-desktop).
 
@@ -233,17 +240,9 @@ Showboard is young, MIT licensed and built with AI assistance, mostly Claude Cod
 
 [Report a problem](https://github.com/rohanbeingsocial/showboard/issues) · [Contribute](CONTRIBUTING.md) · [Read the docs](docs/README.md) · [MIT license](LICENSE)
 
-## Star history
+<br />
 
 <div align="center">
-
-<a href="https://www.star-history.com/#rohanbeingsocial/showboard&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=rohanbeingsocial/showboard&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=rohanbeingsocial/showboard&type=Date" />
-    <img alt="Star history of rohanbeingsocial/showboard" src="https://api.star-history.com/svg?repos=rohanbeingsocial/showboard&type=Date" width="600" />
-  </picture>
-</a>
 
 **[Star Showboard to follow updates.](https://github.com/rohanbeingsocial/showboard)**
 
