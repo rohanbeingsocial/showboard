@@ -9,6 +9,8 @@ See the SQL behind every chart, and ask a follow-up to explore further.
 
 **[Explore the demo](https://rohanbeingsocial.github.io/showboard/)** &nbsp;·&nbsp; **[Get started](#quick-start)** &nbsp;·&nbsp; **[Documentation](docs/README.md)**
 
+**English** &nbsp;·&nbsp; [简体中文](README.zh-CN.md)
+
 <br />
 
 **“Show me my best seller of 2026, and how it compares with last year.”**
@@ -195,6 +197,23 @@ This was two runs on one dataset. Other agents have not been benchmarked, and Cl
 <p align="center">
   <a href="docs/evaluation.md#benchmark">Read the comparison and tradeoffs</a> &nbsp;·&nbsp; <a href="bench/README.md">Reproduce the benchmark</a>
 </p>
+
+## How it compares
+
+<table>
+  <tr>
+    <td width="30%" valign="top"><b>Claude Dashboards</b></td>
+    <td>Anthropic's dashboards on paid Claude plans, built on warehouses such as Snowflake and BigQuery and on connected apps, with the SQL shown on each chart. Showboard is for the files and databases you already have: messy Excel and CSV files with no connector or warehouse, plus Postgres and SQLite. Boards appear in your browser, a terminal pane or your own app, and it is free and MIT licensed.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>dbt Charts</b></td>
+    <td>dbt Labs' open-source charts: SQL plus a YAML layout over CSV, Parquet, DuckDB and warehouses. Showboard reads Excel workbooks directly, and the agent lays out a whole board in one call.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>Your agent on its own</b></td>
+    <td>It can write a script and a page for each chart, and those pages often look better. In our test that cost 2.7× as much and took 3.2× as long, and the numbers live in code you have to read.</td>
+  </tr>
+</table>
 
 ## Works with your agent
 
