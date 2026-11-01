@@ -242,7 +242,42 @@ Showboard is an **MCP server**. It uses the coding agent and model access you al
     <td valign="top"><b>Are the answers always right?</b></td>
     <td>Charts use query results, but the agent can still choose the wrong query or draw the wrong conclusion. Inspect the SQL. Boards are snapshots; ask again or run a recipe for fresh data. Queries retain at most 5,000 rows.</td>
   </tr>
+  <tr>
+    <td valign="top"><b>What can't it do yet?</b></td>
+    <td>The terminal pane draws charts as text, so use the board page for full charts. A chart shows at most 6 lines, or 4 bars per label. Agents other than Claude Code are set up but less tested. See <a href="docs/evaluation.md#limits">Limits</a> and the <a href="docs/evaluation.md#roadmap">roadmap</a>.</td>
+  </tr>
 </table>
+
+## If something doesn't work
+
+<table>
+  <tr>
+    <td width="30%" valign="top"><b>Claude doesn't use Showboard</b></td>
+    <td>Restart Claude Code in your project folder and approve the <code>showboard</code> server when asked. With the plugin, check that Showboard is enabled under <code>/plugin</code>. With a project setup, run <code>npx showboard doctor</code>: every problem it finds comes with a <code>Fix:</code> line.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>The install or the server fails to start</b></td>
+    <td>Run <code>node --version</code>. Showboard needs 22.13 or later. The desktop extension brings its own Node.js.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>No board appears</b></td>
+    <td>In Claude Code, type <code>/board</code>. Or open the board page: http://localhost:4711 for the plugin, http://localhost:4710 for <code>npx showboard init</code>, http://localhost:4712 for the desktop extension. A board drawn while nothing is open is saved and shows up when you open one.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b><code>doctor</code> says another program uses port 4710</b></td>
+    <td>Another project or program already uses that port. Rerun <code>init</code> with <code>--port</code> and a free port, such as <code>--port 4720</code>.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>It reads the wrong data</b></td>
+    <td>With the plugin, open <code>/plugin</code>, choose Showboard on the <b>Installed</b> tab, then <b>Configure options</b>. With a project setup, rerun <code>npx showboard init</code> with the right files or <code>--db</code>.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>Amounts show the wrong currency</b></td>
+    <td>Showboard reads the currency from your spreadsheets' headings and amounts (₹, €, £, ¥, $), else uses US dollars. To set it, rerun <code>init</code> with <code>--currency</code> and <code>--locale</code>, for example <code>--currency EUR --locale de-DE</code>. The plugin has no currency setting yet.</td>
+  </tr>
+</table>
+
+More fixes are in the [setup guide](SETUP.md#when-something-fails). If yours isn't there, [open an issue](https://github.com/rohanbeingsocial/showboard/issues) with what `npx showboard doctor` prints.
 
 ## Considering using Showboard?
 
@@ -257,7 +292,7 @@ The documentation covers the details needed to decide whether it fits your workf
 
 Showboard is young, MIT licensed and built with AI assistance, mostly Claude Code. It has a test suite and a reproducible benchmark; real-world feedback is welcome.
 
-[Report a problem](https://github.com/rohanbeingsocial/showboard/issues) · [Contribute](CONTRIBUTING.md) · [Read the docs](docs/README.md) · [MIT license](LICENSE)
+[Report a problem](https://github.com/rohanbeingsocial/showboard/issues) · [Contribute](CONTRIBUTING.md) · [Read the docs](docs/README.md) · [What's new](CHANGELOG.md) · [MIT license](LICENSE)
 
 <br />
 
