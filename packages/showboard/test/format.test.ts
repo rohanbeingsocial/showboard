@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { columnLabel, formatDate, formatValue, humanize, parseDate } from "../src/spec/format.js";
+import { columnLabel, fieldLabel, formatDate, formatValue, humanize, parseDate } from "../src/spec/format.js";
 
 describe("format", () => {
   it("prints months, days and timestamps without shifting the day", () => {
@@ -30,5 +30,13 @@ describe("format", () => {
     expect(columnLabel("Aero Standing Desk")).toBe("Aero Standing Desk");
     expect(columnLabel("iPhone sales")).toBe("iPhone sales");
     expect(columnLabel("store")).toBe("Store");
+  });
+
+  it("upgrades labels older boards saved automatically, and keeps written ones", () => {
+    expect(fieldLabel("pe", "Pe")).toBe("P/E");
+    expect(fieldLabel("revenue_growth_ttm", "Revenue growth ttm")).toBe("Revenue growth TTM");
+    expect(fieldLabel("pe", "Price to earnings")).toBe("Price to earnings");
+    expect(fieldLabel("pct_of_risk", undefined)).toBe("% of risk");
+    expect(fieldLabel("pct_of_risk", "% of risk")).toBe("% of risk");
   });
 });

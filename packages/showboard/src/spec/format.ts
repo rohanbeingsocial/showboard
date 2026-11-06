@@ -32,6 +32,16 @@ export function humanize(column: string): string {
 /** How a column or series name reads on screen: identifiers are humanized, anything else is kept as written. */
 export const columnLabel = (name: string) => (/^[a-z][a-z0-9_]*$/.test(name) ? humanize(name) : name);
 
+/**
+ * A label for `field`: the one given, unless it is the plain form older boards saved
+ * automatically ("Pe", "Total pnl pct"), which is drawn as today's heading instead.
+ */
+export function fieldLabel(field: string, label: string | undefined): string {
+  if (label === undefined) return columnLabel(field);
+  const plain = field.replace(/_+/g, " ").trim();
+  return label === plain.charAt(0).toUpperCase() + plain.slice(1) ? columnLabel(field) : label;
+}
+
 /** Numbers arrive as numbers from Postgres numeric/bigint too (the server converts them). */
 export function toNumber(value: unknown): number | null {
   if (typeof value === "number") return Number.isFinite(value) ? value : null;

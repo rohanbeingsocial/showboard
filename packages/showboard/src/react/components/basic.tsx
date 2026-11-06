@@ -1,7 +1,7 @@
 import { Fragment, useState, type ReactNode } from "react";
 import type { ComponentRenderProps } from "@json-render/react";
 import type { BuiltInProps } from "../../spec/catalog.js";
-import { columnLabel, formatValue, toNumber } from "../../spec/format.js";
+import { fieldLabel, formatValue, toNumber } from "../../spec/format.js";
 import { useShowboard } from "../context.js";
 import { Card, Missing, useDataset } from "./frame.js";
 import { order, useCountUp } from "./motion.js";
@@ -40,7 +40,7 @@ export function Metric({ element }: ComponentRenderProps<BuiltInProps<"Metric">>
   const shown = n !== null && counted !== null ? Number(counted.toFixed(decimals)) : value;
   return (
     <Card dataset={dataset} className="sb-metric">
-      <div className="sb-metric-label">{label}</div>
+      <div className="sb-metric-label">{fieldLabel(field, label)}</div>
       <div className="sb-metric-value">{value === undefined ? "–" : formatValue(shown, format ?? (n === null ? "text" : undefined), opts)}</div>
       {caption ? <div className="sb-metric-caption">{caption}</div> : null}
     </Card>
@@ -62,7 +62,7 @@ export function Table({ element }: ComponentRenderProps<BuiltInProps<"Table">>) 
           <thead>
             <tr>
               {columns.map((c) => (
-                <th key={c.field} className={numeric.has(c.field) ? "sb-num" : undefined}>{c.label ?? columnLabel(c.field)}</th>
+                <th key={c.field} className={numeric.has(c.field) ? "sb-num" : undefined}>{fieldLabel(c.field, c.label)}</th>
               ))}
             </tr>
           </thead>
