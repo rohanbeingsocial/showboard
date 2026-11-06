@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { ComponentRenderProps } from "@json-render/react";
 import type { BuiltInProps } from "../../spec/catalog.js";
 import { formatAxis, formatValue, toNumber } from "../../spec/format.js";
 import { useShowboard } from "../context.js";
 import { Card, Missing, useDataset } from "./frame.js";
-import { SERIES_COLORS, textWidth } from "./scale.js";
+import { order, useCountUp } from "./motion.js";
+import { SERIES_COLORS, svgId, textWidth } from "./scale.js";
 
 const MAX_SLICES = 7;
 const SIZE = 168;
@@ -14,14 +15,15 @@ export function PieChart({ element }: ComponentRenderProps<BuiltInProps<"PieChar
   const dataset = useDataset(name);
   const { format: opts } = useShowboard();
   const [hover, setHover] = useState<number | null>(null);
-  if (!dataset) return <Missing what={`No dataset "${name}".`} />;
-
-  const all = dataset.rows
+  const sweep = svgId(useId());
+  const all = (dataset?.rows ?? [])
     .map((r) => ({ label: String(r[label] ?? "–"), value: toNumber(r[value]) ?? 0 }))
     .filter((s) => s.value > 0)
     .sort((a, b) => b.value - a.value);
   const slices = all.length > MAX_SLICES + 1 ? [...all.slice(0, MAX_SLICES), { label: "Other", value: all.slice(MAX_SLICES).reduce((t, s) => t + s.value, 0) }] : all;
   const total = slices.reduce((t, s) => t + s.value, 0);
+  const counted = useCountUp(total || null, 1000) ?? total;
+  if (!dataset) return <Missing what={`No dataset "${name}".`} />;
   if (!total) return <Card title={title} dataset={dataset}><Missing what="No positive values to draw." /></Card>;
 
   const r = SIZE / 2;
@@ -35,22 +37,33 @@ export function PieChart({ element }: ComponentRenderProps<BuiltInProps<"PieChar
   });
   const focus = hover !== null ? arcs[hover] : undefined;
   // The middle shows the full amount when it fits the hole, else the short form ($1.8M).
+  // The width is decided on the final total, so the label doesn't switch form while counting.
+  const shown = focus?.value ?? counted;
   const full = formatValue(focus?.value ?? total, format, opts);
-  const middle = textWidth(full, 16) <= inner * 2 - 16 ? full : formatAxis(focus?.value ?? total, format, opts);
+  const fits = textWidth(full, 16) <= inner * 2 - 16;
+  const middle = fits ? formatValue(shown, format, opts) : formatAxis(shown, format, opts);
 
   return (
     <Card title={title} dataset={dataset}>
       <div className="sb-pie">
         <svg width={SIZE} height={SIZE} role="img" aria-label={title ?? `${value} by ${label}`}>
-          {arcs.map((a, i) => (
-            <path key={a.label} d={a.path} fill={a.color} className="sb-slice" opacity={hover === null || hover === i ? 1 : 0.4} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} />
-          ))}
+          <defs>
+            {/* A ring stroked from 12 o'clock reveals the slices clockwise. */}
+            <mask id={sweep}>
+              <circle className="sb-sweep" cx={r} cy={r} r={(r - 2 + inner) / 2} fill="none" stroke="#fff" strokeWidth={r - inner + 4} pathLength={1} transform={`rotate(-90 ${r} ${r})`} />
+            </mask>
+          </defs>
+          <g mask={`url(#${sweep})`}>
+            {arcs.map((a, i) => (
+              <path key={a.label} d={a.path} fill={a.color} className={`sb-slice${hover === i ? " sb-active" : ""}`} opacity={hover === null || hover === i ? 1 : 0.4} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} />
+            ))}
+          </g>
           <text x={r} y={r - 4} textAnchor="middle" className="sb-pie-value">{middle}</text>
           <text x={r} y={r + 15} textAnchor="middle" className="sb-axis">{focus ? `${Math.round((focus.value / total) * 100)}%` : "Total"}</text>
         </svg>
         <ul className="sb-pie-legend">
           {arcs.map((a, i) => (
-            <li key={a.label} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} className={hover === i ? "sb-active" : undefined}>
+            <li key={a.label} style={order(i)} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} className={hover === i ? "sb-active" : undefined}>
               <span className="sb-swatch" style={{ background: a.color }} />
               <span className="sb-pie-label">{a.label}</span>
               <span className="sb-num">{formatValue(a.value, format, opts)}</span>

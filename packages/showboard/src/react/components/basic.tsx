@@ -1,14 +1,15 @@
 import { Fragment, useState, type ReactNode } from "react";
 import type { ComponentRenderProps } from "@json-render/react";
 import type { BuiltInProps } from "../../spec/catalog.js";
-import { formatValue, toNumber } from "../../spec/format.js";
+import { columnLabel, formatValue, toNumber } from "../../spec/format.js";
 import { useShowboard } from "../context.js";
 import { Card, Missing, useDataset } from "./frame.js";
+import { order, useCountUp } from "./motion.js";
 
 export function Grid({ element, children }: ComponentRenderProps<BuiltInProps<"Grid">>) {
   const columns = element.props.columns ?? 2;
   return (
-    <div className="sb-grid" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+    <div className={`sb-grid sb-grid-${columns}`} style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
       {children}
     </div>
   );
@@ -17,8 +18,10 @@ export function Grid({ element, children }: ComponentRenderProps<BuiltInProps<"G
 export function Section({ element, children }: ComponentRenderProps<BuiltInProps<"Section">>) {
   return (
     <section className="sb-section">
-      <h2 className="sb-section-title">{element.props.title}</h2>
-      {element.props.subtitle ? <p className="sb-muted">{element.props.subtitle}</p> : null}
+      <header className="sb-section-head sb-enter">
+        <h2 className="sb-section-title">{element.props.title}</h2>
+        {element.props.subtitle ? <p className="sb-section-subtitle">{element.props.subtitle}</p> : null}
+      </header>
       <div className="sb-stack">{children}</div>
     </section>
   );
@@ -28,13 +31,18 @@ export function Metric({ element }: ComponentRenderProps<BuiltInProps<"Metric">>
   const { label, dataset: name, field, row = 0, format, caption } = element.props;
   const dataset = useDataset(name);
   const { format: opts } = useShowboard();
+  const value = dataset?.rows[row]?.[field];
+  const n = format === "date" || format === "text" ? null : toNumber(value);
+  // Counts up in the value's own precision, so the digits don't flicker on the way.
+  const decimals = n === null ? 0 : Math.min(4, (String(n).split(".")[1] ?? "").length);
+  const counted = useCountUp(n);
   if (!dataset) return <Missing what={`No dataset "${name}".`} />;
-  const value = dataset.rows[row]?.[field];
+  const shown = n !== null && counted !== null ? Number(counted.toFixed(decimals)) : value;
   return (
     <Card dataset={dataset} className="sb-metric">
       <div className="sb-metric-label">{label}</div>
-      <div className="sb-metric-value">{value === undefined ? "–" : formatValue(value, format ?? (toNumber(value) === null ? "text" : undefined), opts)}</div>
-      {caption ? <div className="sb-muted">{caption}</div> : null}
+      <div className="sb-metric-value">{value === undefined ? "–" : formatValue(shown, format ?? (n === null ? "text" : undefined), opts)}</div>
+      {caption ? <div className="sb-metric-caption">{caption}</div> : null}
     </Card>
   );
 }
@@ -54,13 +62,13 @@ export function Table({ element }: ComponentRenderProps<BuiltInProps<"Table">>) 
           <thead>
             <tr>
               {columns.map((c) => (
-                <th key={c.field} className={numeric.has(c.field) ? "sb-num" : undefined}>{c.label ?? c.field}</th>
+                <th key={c.field} className={numeric.has(c.field) ? "sb-num" : undefined}>{c.label ?? columnLabel(c.field)}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={i}>
+              <tr key={i} style={order(i)}>
                 {columns.map((c) => (
                   <td key={c.field} className={numeric.has(c.field) ? "sb-num" : undefined}>
                     {formatValue(r[c.field], c.format ?? (numeric.has(c.field) ? undefined : "text"), opts)}
@@ -79,7 +87,7 @@ export function Table({ element }: ComponentRenderProps<BuiltInProps<"Table">>) 
 export function Note({ element }: ComponentRenderProps<BuiltInProps<"Note">>) {
   const { text, title, tone = "plain" } = element.props;
   return (
-    <div className={`sb-note sb-tone-${tone}`}>
+    <div className={`sb-note sb-enter sb-tone-${tone}`}>
       {title ? <h3 className="sb-card-title">{title}</h3> : null}
       {blocks(text)}
     </div>

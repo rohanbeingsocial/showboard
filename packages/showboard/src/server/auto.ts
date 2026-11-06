@@ -1,6 +1,6 @@
 import type { Spec, UIElement } from "@json-render/core";
 import type { ValueFormat } from "../spec/catalog.js";
-import { parseDate } from "../spec/format.js";
+import { humanize, parseDate } from "../spec/format.js";
 import type { Column, Dataset } from "../spec/types.js";
 import { isNote, isRow, isSection, type DataPart, type Item, type View } from "./items.js";
 
@@ -212,8 +212,4 @@ export function buildSpec(items: Item[], resolved: Map<DataPart, Resolved>, fill
   return { root: "root", elements };
 }
 
-/** "total_pnl_pct" → "Total pnl pct". */
-export function humanize(column: string): string {
-  const text = column.replace(/_+/g, " ").trim();
-  return (text.charAt(0).toUpperCase() + text.slice(1)).slice(0, 80);
-}
+export { humanize };

@@ -73,4 +73,7 @@ export function tooltipLeft(x: number, width: number, tipWidth = 190): number {
   return x + 14 + tipWidth <= width ? x + 14 : Math.max(0, x - 14 - tipWidth);
 }
 
+/** A React id made safe for SVG references like url(#id). */
+export const svgId = (id: string) => `sb${id.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+
 export const SERIES_COLORS =["var(--sb-c1)", "var(--sb-c2)", "var(--sb-c3)", "var(--sb-c4)", "var(--sb-c5)", "var(--sb-c6)", "var(--sb-c7)", "var(--sb-c8)"];

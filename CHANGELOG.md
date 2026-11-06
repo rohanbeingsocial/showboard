@@ -4,7 +4,25 @@ What changed in each Showboard release. The npm package, the Claude Code plugin 
 
 ## Unreleased
 
-No package changes since 0.4.1. The documentation and demo changed:
+Boards look designed and move:
+
+- Design rules ([docs/design.md](docs/design.md)): scales for space (4–48px), type (12–28px), shape and motion, exposed as `--sb-*` variables.
+- Clearer hierarchy:
+  - A 28px board title.
+  - 18px section titles with extra space above each section.
+  - 24px card padding.
+  - Notes washed in their tone's colour.
+  - A switch for Show sources.
+  - Highlighted table rows under the pointer.
+  - A donut that centres in its card.
+- Column names such as `revenue_2025` read "Revenue 2025" in legends, tooltips and table headers.
+- Motion:
+  - Boards build themselves in reading order: blocks rise in, bars grow from the baseline, lines draw, the donut sweeps, and headline numbers count up.
+  - Tooltips fade and glide.
+  - Everything stands still under reduced motion.
+- `draw` gives agents short composition rules (title states the finding, answer first, one idea per chart, small tables, short notes); the board-builder agent follows them.
+
+The documentation and demo also changed:
 
 - A [browser demo](https://rohanbeingsocial.github.io/showboard/) on GitHub Pages, so you can see a board before installing.
 - The README leads with the Claude Code plugin. It has a "How it compares" section, an architecture diagram ([docs/architecture.md](docs/architecture.md)) and a [Simplified Chinese translation](README.zh-CN.md).

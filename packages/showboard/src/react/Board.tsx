@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { JSONUIProvider, Renderer, type ComponentRegistry, type ComponentRenderProps } from "@json-render/react";
 import type { Board as BoardData, BoardSummary } from "../spec/types.js";
 import { BoardDataContext, useShowboard, type ShowboardComponent } from "./context.js";
@@ -24,6 +24,11 @@ export function Board({ board: given, empty, className = "" }: BoardProps) {
   const board = given === undefined ? current : given;
   const [showSources, setShowSources] = useState(false);
   const registry = useMemo(() => ({ ...BUILT_IN_REGISTRY, ...appRegistry(components) }), [components]);
+  const root = useRef<HTMLDivElement>(null);
+  // Blocks enter top to bottom: each one's place in reading order sets its delay (styles.css, Motion).
+  useLayoutEffect(() => {
+    root.current?.querySelectorAll<HTMLElement>(".sb-enter").forEach((el, i) => el.style.setProperty("--sb-i", String(Math.min(i, 14))));
+  }, [board?.id, board?.at]);
 
   if (!board) {
     return (
@@ -37,14 +42,14 @@ export function Board({ board: given, empty, className = "" }: BoardProps) {
   const state = { ...board.spec.state, data: Object.fromEntries(Object.entries(board.datasets).map(([name, d]) => [name, d.rows])) };
   const at = new Date(board.at);
   return (
-    <div className={`sb-board ${className}`}>
-      <header className="sb-board-head">
+    <div ref={root} className={`sb-board ${className}`}>
+      <header className="sb-board-head sb-enter">
         <div>
           <h1 className="sb-board-title">{board.title}</h1>
-          <span className="sb-muted">{Number.isNaN(at.getTime()) ? "" : new Intl.DateTimeFormat(format.locale, { dateStyle: "medium", timeStyle: "short" }).format(at)}</span>
+          <p className="sb-board-meta">{Number.isNaN(at.getTime()) ? "" : new Intl.DateTimeFormat(format.locale, { dateStyle: "medium", timeStyle: "short" }).format(at)}</p>
         </div>
         <label className="sb-toggle">
-          <input type="checkbox" checked={showSources} onChange={(e) => setShowSources(e.target.checked)} /> Show sources
+          <input type="checkbox" role="switch" checked={showSources} onChange={(e) => setShowSources(e.target.checked)} /> Show sources
         </label>
       </header>
       <BoardDataContext.Provider value={board.datasets}>

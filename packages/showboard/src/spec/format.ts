@@ -6,6 +6,15 @@ export interface FormatOptions {
   currency?: string;
 }
 
+/** "total_pnl_pct" → "Total pnl %", "revenue_2025" → "Revenue 2025". */
+export function humanize(column: string): string {
+  const text = column.replace(/_+/g, " ").replace(/\bpct\b/gi, "%").trim();
+  return (text.charAt(0).toUpperCase() + text.slice(1)).slice(0, 80);
+}
+
+/** How a column or series name reads on screen: identifiers are humanized, anything else is kept as written. */
+export const columnLabel = (name: string) => (/^[a-z][a-z0-9_]*$/.test(name) ? humanize(name) : name);
+
 /** Numbers arrive as numbers from Postgres numeric/bigint too (the server converts them). */
 export function toNumber(value: unknown): number | null {
   if (typeof value === "number") return Number.isFinite(value) ? value : null;

@@ -1,10 +1,11 @@
-import { useMemo, useState, type MouseEvent } from "react";
+import { useId, useMemo, useState, type MouseEvent } from "react";
 import type { ComponentRenderProps } from "@json-render/react";
 import type { BuiltInProps } from "../../spec/catalog.js";
-import { formatAxis, formatDate, formatValue, parseDate, toNumber } from "../../spec/format.js";
+import { columnLabel, formatAxis, formatDate, formatValue, parseDate, toNumber } from "../../spec/format.js";
 import { useShowboard } from "../context.js";
 import { Card, Missing, useDataset, useWidth } from "./frame.js";
-import { SERIES_COLORS, linear, niceTicks, textWidth, tooltipLeft, truncate, valueDomain } from "./scale.js";
+import { order } from "./motion.js";
+import { SERIES_COLORS, linear, niceTicks, svgId, textWidth, tooltipLeft, truncate, valueDomain } from "./scale.js";
 
 const HEIGHT = 240;
 
@@ -14,6 +15,7 @@ export function LineChart({ element }: ComponentRenderProps<BuiltInProps<"LineCh
   const { format: opts } = useShowboard();
   const [ref, width] = useWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
+  const fade = svgId(useId());
 
   const points = useMemo(() => {
     const rows = dataset?.rows ?? [];
@@ -74,9 +76,19 @@ export function LineChart({ element }: ComponentRenderProps<BuiltInProps<"LineCh
                 {truncate(text, 16)}
               </text>
             ))}
-            {single ? <path d={`${linePath(points.items, 0, sx, sy)}L${plot.right.toFixed(1)},${sy(base).toFixed(1)}L${sx(points.items[0]!.key).toFixed(1)},${sy(base).toFixed(1)}Z`} fill={color(0)} fillOpacity={0.1} /> : null}
+            {single ? (
+              <>
+                <defs>
+                  <linearGradient id={fade} x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor={color(0)} stopOpacity={0.22} />
+                    <stop offset="100%" stopColor={color(0)} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <path className="sb-area" d={`${linePath(points.items, 0, sx, sy)}L${plot.right.toFixed(1)},${sy(base).toFixed(1)}L${sx(points.items[0]!.key).toFixed(1)},${sy(base).toFixed(1)}Z`} fill={`url(#${fade})`} />
+              </>
+            ) : null}
             {y.map((col, s) => (
-              <path key={col} d={linePath(points.items, s, sx, sy)} fill="none" stroke={color(s)} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+              <path key={col} className="sb-line" pathLength={1} style={order(s)} d={linePath(points.items, s, sx, sy)} fill="none" stroke={color(s)} strokeWidth={2.25} strokeLinejoin="round" strokeLinecap="round" />
             ))}
             {hovered ? (
               <line className="sb-hover-line" x1={sx(hovered.key)} x2={sx(hovered.key)} y1={plot.top} y2={plot.bottom} />
@@ -84,7 +96,7 @@ export function LineChart({ element }: ComponentRenderProps<BuiltInProps<"LineCh
             {y.map((col, s) => {
               // A dot ends each line, and marks the hovered point.
               const at = hovered && hovered.values[s] !== null ? hovered : points.items.findLast((p) => p.values[s] !== null);
-              return at ? <circle key={col} className="sb-dot" cx={sx(at.key)} cy={sy(at.values[s]!)} r={4} fill={color(s)} /> : null;
+              return at ? <circle key={col} className="sb-dot" style={order(s)} cx={sx(at.key)} cy={sy(at.values[s]!)} r={4} fill={color(s)} /> : null;
             })}
           </svg>
         ) : null}
@@ -94,7 +106,7 @@ export function LineChart({ element }: ComponentRenderProps<BuiltInProps<"LineCh
             {y.map((col, s) => (
               <div key={col} className="sb-tooltip-row">
                 <span className="sb-swatch" style={{ background: color(s) }} />
-                <span>{col}</span>
+                <span>{columnLabel(col)}</span>
                 <span className="sb-num">{formatValue(hovered.values[s], format, opts)}</span>
               </div>
             ))}
@@ -151,7 +163,7 @@ export function Legend({ names }: { names: string[] }) {
       {names.map((n, i) => (
         <span key={n}>
           <span className="sb-swatch" style={{ background: SERIES_COLORS[i % SERIES_COLORS.length] }} />
-          {n}
+          {columnLabel(n)}
         </span>
       ))}
     </div>

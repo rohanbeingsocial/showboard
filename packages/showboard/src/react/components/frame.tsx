@@ -29,7 +29,7 @@ export function useWidth<T extends HTMLElement>(): [RefObject<T | null>, number]
 export function Card({ title, dataset, children, className = "" }: { title?: string; dataset?: Dataset; children: ReactNode; className?: string }) {
   const showSources = useContext(ShowSourcesContext);
   return (
-    <section className={`sb-card ${className}`}>
+    <section className={`sb-card sb-enter ${className}`}>
       {title ? <h3 className="sb-card-title">{title}</h3> : null}
       {children}
       {showSources && dataset ? <Source dataset={dataset} /> : null}

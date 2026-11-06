@@ -487,17 +487,21 @@ Every path is under the handler's `basePath`. POST bodies are JSON (`content-typ
   --sb-card: #ffffff;
   --sb-fg: #16181d;
   --sb-muted: #6b7280;
-  --sb-border: #e5e7eb;
-  --sb-grid: #eef0f3;      /* chart grid lines and code background */
-  --sb-accent: #2563eb;    /* buttons */
+  --sb-border: #e6e8ec;
+  --sb-grid: #eff1f4;      /* chart grid lines, table row lines and code background */
+  --sb-baseline: #cfd3da;  /* chart zero line, plain note bar */
+  --sb-hover: #f5f6f8;     /* hovered table row and legend entry */
+  --sb-accent: #2563eb;    /* buttons, the Show sources switch */
   --sb-on-accent: #ffffff;
   --sb-good: #15803d;      /* note tones */
   --sb-warn: #b45309;
   --sb-bad: #b91c1c;
   --sb-info: #1d4ed8;
-  --sb-radius: 10px;
-  --sb-c1: #2563eb;        /* series colours: --sb-c1 to --sb-c8 */
+  --sb-radius: 14px;       /* cards; --sb-radius-sm (8px) for tooltips and buttons */
+  --sb-c1: #2a78d6;        /* series colours: --sb-c1 to --sb-c8 */
 }
 ```
 
 The values above are the defaults. `<Board className="sb-dark" />` uses the dark palette, as Showboard's own page does when your system is in dark mode.
+
+Spacing, type sizes and motion come from scales (`--sb-space-1` to `--sb-space-7`, `--sb-text-xs` to `--sb-text-xl`, `--sb-ease`, `--sb-enter`, `--sb-draw`, `--sb-stagger`). [Design rules](design.md) explains each one and how boards move. Boards stand still when the system asks for reduced motion.

@@ -51,6 +51,16 @@ const NO_BROWSER = "No browser has the app open, so nothing is on screen yet.";
 /** Rows a result may have and still come back whole from draw. */
 const SMALL_RESULT = 12;
 
+/** The composition rules from docs/design.md, short enough to ride along with draw. */
+export const BOARD_DESIGN = [
+  "Board design:",
+  "- The title states the finding (\"IT is 25% of the money but 31% of the risk\"), not the topic.",
+  "- Answer first: up to 4 headline numbers in one row, then one short note if the takeaway needs words, then the charts that show why; detail tables last.",
+  "- One idea per chart, titled by what it shows. Bars ≤ 4 series, lines ≤ 5; horizontal bars past 8 categories or for long names; a pie only for parts of one whole.",
+  "- Rows of 2 (metrics up to 4); a chart beside the table that explains it, not two tables side by side. Sections only for 2+ groups.",
+  "- Tables ≤ 7 columns and ≤ 15 rows unless asked. Notes ≤ 5 bullets, each opening with its point in **bold**; tone good/warn/bad only when the news is.",
+].join("\n");
+
 const tool = <S extends z.ZodObject>(def: { name: string; description: string; input: S; run(input: z.infer<S>): Promise<unknown> }): ToolDef => def as unknown as ToolDef;
 
 /** "Price, rebased to 100" → "price_rebased_to_100": a dataset name from a title. */
@@ -277,6 +287,7 @@ export function createTools(ctx: ToolContext): ToolDef[] {
         "- {note, title?, tone?}: your text. Quote only figures you have read.",
         "- {row: [parts]} side by side; {section, subtitle?, items} a titled group.",
         "The database computes every number: aggregate, rebase and round in SQL. Put values the user may change in params (:name in the SQL) and add save_as to keep the board as a recipe, so the same board for other values is one recipe call. Returns the rows of each part (the first and last of long ones) to check.",
+        BOARD_DESIGN,
         "Components:",
         describeComponents(BUILT_IN),
         "The app can add its own components; get_screen lists them.",

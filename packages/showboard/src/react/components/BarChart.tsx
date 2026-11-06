@@ -1,10 +1,11 @@
 import { useState, type ReactNode } from "react";
 import type { ComponentRenderProps } from "@json-render/react";
 import type { BuiltInProps } from "../../spec/catalog.js";
-import { formatAxis, formatDate, formatValue, toNumber } from "../../spec/format.js";
+import { columnLabel, formatAxis, formatDate, formatValue, toNumber } from "../../spec/format.js";
 import { useShowboard } from "../context.js";
 import { Card, Missing, useDataset, useWidth } from "./frame.js";
 import { Legend, pickLabelIndexes } from "./LineChart.js";
+import { order } from "./motion.js";
 import { SERIES_COLORS, barPath, linear, niceTicks, textWidth, tooltipLeft, truncate, valueDomain } from "./scale.js";
 
 const VERTICAL_HEIGHT = 240;
@@ -57,16 +58,16 @@ export function BarChart({ element }: ComponentRenderProps<BuiltInProps<"BarChar
             </g>
           ))}
           {items.map((item, i) => (
-            <g key={i} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
+            <g key={i} style={order(i)} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
               <rect x={0} y={i * row} width={width} height={row} fill="transparent" />
               <text className="sb-axis sb-axis-strong" x={labelWidth - 10} y={i * row + row / 2} dy="0.32em" textAnchor="end">{truncate(item.label, Math.floor(labelWidth / 7))}</text>
               {item.values.map((v, s) => {
                 if (v === null) return null;
                 const x0 = Math.min(sx(0), sx(v));
-                return <path key={s} d={barPath(x0, i * row + 6 + s * (thick + GAP), Math.max(1, Math.abs(sx(v) - sx(0))), thick, v < 0 ? "left" : "right")} fill={color(s)} opacity={dim(i)} />;
+                return <path key={s} className={`sb-bar ${v < 0 ? "sb-grow-left" : "sb-grow-right"}`} d={barPath(x0, i * row + 6 + s * (thick + GAP), Math.max(1, Math.abs(sx(v) - sx(0))), thick, v < 0 ? "left" : "right")} fill={color(s)} opacity={dim(i)} />;
               })}
               {groups === 1 && item.values[0] !== null ? (
-                <text className="sb-axis sb-value" x={Math.max(sx(0), sx(item.values[0]!)) + 6} y={i * row + row / 2} dy="0.32em">{short(item.values[0]!)}</text>
+                <text className="sb-axis sb-value sb-bar-label" x={Math.max(sx(0), sx(item.values[0]!)) + 6} y={i * row + row / 2} dy="0.32em">{short(item.values[0]!)}</text>
               ) : null}
             </g>
           ))}
@@ -97,15 +98,15 @@ export function BarChart({ element }: ComponentRenderProps<BuiltInProps<"BarChar
         {items.map((item, i) => {
           const x0 = left + i * band + (band - group) / 2;
           return (
-            <g key={i} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
+            <g key={i} style={order(i)} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
               <rect x={left + i * band} y={0} width={band} height={bottom} fill="transparent" />
               {item.values.map((v, s) =>
                 v === null ? null : (
-                  <path key={s} d={barPath(x0 + s * (bar + GAP), Math.min(sy(0), sy(v)), bar, Math.max(1, Math.abs(sy(v) - sy(0))), v < 0 ? "bottom" : "top")} fill={color(s)} opacity={dim(i)} />
+                  <path key={s} className={`sb-bar ${v < 0 ? "sb-grow-down" : "sb-grow-up"}`} d={barPath(x0 + s * (bar + GAP), Math.min(sy(0), sy(v)), bar, Math.max(1, Math.abs(sy(v) - sy(0))), v < 0 ? "bottom" : "top")} fill={color(s)} opacity={dim(i)} />
                 ),
               )}
               {capLabels && item.values[0] !== null ? (
-                <text className="sb-axis sb-value" x={x0 + bar / 2} y={item.values[0]! < 0 ? sy(item.values[0]!) + 14 : sy(item.values[0]!) - 6} textAnchor="middle">{short(item.values[0]!)}</text>
+                <text className="sb-axis sb-value sb-bar-label" x={x0 + bar / 2} y={item.values[0]! < 0 ? sy(item.values[0]!) + 14 : sy(item.values[0]!) - 6} textAnchor="middle">{short(item.values[0]!)}</text>
               ) : null}
               {labelIdx.has(i) ? (
                 <text className="sb-axis" x={left + i * band + band / 2} y={VERTICAL_HEIGHT - 8} textAnchor="middle">{truncate(item.label, Math.max(4, Math.floor(Math.max(band, 70) / 7)))}</text>
@@ -131,7 +132,7 @@ export function BarChart({ element }: ComponentRenderProps<BuiltInProps<"BarChar
             {y.map((col, s) => (
               <div key={col} className="sb-tooltip-row">
                 <span className="sb-swatch" style={{ background: color(s) }} />
-                <span>{col}</span>
+                <span>{columnLabel(col)}</span>
                 <span className="sb-num">{formatValue(tip.values[s], format, opts)}</span>
               </div>
             ))}
