@@ -6,9 +6,26 @@ export interface FormatOptions {
   currency?: string;
 }
 
-/** "total_pnl_pct" → "Total pnl %", "revenue_2025" → "Revenue 2025". */
+/** Words that read as their usual short form in a heading. */
+const SHORT_FORMS: Record<string, string> = {
+  pct: "%",
+  pe: "P/E",
+  pb: "P/B",
+  de: "D/E",
+  pnl: "P&L",
+  ...Object.fromEntries(
+    ["id", "roe", "roce", "roa", "eps", "ttm", "yoy", "qoq", "mom", "ytd", "aov", "nav", "ltp", "cagr", "xirr", "ebitda", "ebit", "ev", "etf", "ipo", "sku", "kpi", "gdp", "cpi"].map((w) => [w, w.toUpperCase()]),
+  ),
+};
+
+/** "total_pnl_pct" → "Total P&L %", "revenue_growth_ttm" → "Revenue growth TTM", "pe" → "P/E". */
 export function humanize(column: string): string {
-  const text = column.replace(/_+/g, " ").replace(/\bpct\b/gi, "%").trim();
+  const text = column
+    .replace(/_+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .map((word) => SHORT_FORMS[word.toLowerCase()] ?? word)
+    .join(" ");
   return (text.charAt(0).toUpperCase() + text.slice(1)).slice(0, 80);
 }
 

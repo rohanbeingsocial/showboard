@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatValue, parseDate } from "../src/spec/format.js";
+import { columnLabel, formatDate, formatValue, humanize, parseDate } from "../src/spec/format.js";
 
 describe("format", () => {
   it("prints months, days and timestamps without shifting the day", () => {
@@ -16,5 +16,19 @@ describe("format", () => {
     expect(formatValue("1234.5", undefined, usd)).toBe("1,235");
     expect(formatValue(null, "number")).toBe("–");
     expect(formatValue("Desks", undefined)).toBe("Desks");
+  });
+
+  it("turns column names into headings, with the usual short forms", () => {
+    expect(humanize("revenue_2025")).toBe("Revenue 2025");
+    expect(humanize("pct_of_portfolio")).toBe("% of portfolio");
+    expect(humanize("total_pnl_pct")).toBe("Total P&L %");
+    expect(humanize("revenue_growth_ttm")).toBe("Revenue growth TTM");
+    expect(humanize("pe")).toBe("P/E");
+    expect(humanize("roce")).toBe("ROCE");
+    expect(humanize("div_yield")).toBe("Div yield");
+    // Only identifiers change; names already written for people stay as they are.
+    expect(columnLabel("Aero Standing Desk")).toBe("Aero Standing Desk");
+    expect(columnLabel("iPhone sales")).toBe("iPhone sales");
+    expect(columnLabel("store")).toBe("Store");
   });
 });
