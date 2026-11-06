@@ -2,7 +2,7 @@
   "mcpServers": {
     "showboard": {
       "command": "npx",
-      "args": ["-y", "showboard@0.4.1", "mcp", "--plugin", "claude-code", "--port", "4711"],
+      "args": ["-y", "showboard@0.4.2", "mcp", "--plugin", "claude-code", "--port", "4711"],
       "env": {
         "SHOWBOARD_DATA": "${user_config.data}",
         "SHOWBOARD_DB": "${user_config.database_url}"

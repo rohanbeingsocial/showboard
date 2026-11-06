@@ -2,7 +2,13 @@
 
 What changed in each Showboard release. The npm package, the Claude Code plugin and the Claude desktop extension ship together; full notes are on the [releases page](https://github.com/rohanbeingsocial/showboard/releases).
 
-## Unreleased
+## 0.4.2 (6 Nov 2026)
+
+Spreadsheet numbers with a comma decimal now add up:
+
+- Amounts typed as text read `1.234,50`, `1 234,50` and `1'234.50` as well as `1,234.50`. Each value is read by its own decimal mark, so a column that mixes `1.234,50` and `1,234.50` totals correctly. Before, one `1.234,50` turned the whole column into text, and a sum over it came out wrong with no warning.
+- A value that could be read two ways (`1.234` or `5,000`) follows the rest of its column. When the column is split between the two styles, the value is left empty and named in a note instead of guessed. A column with nothing to go by reads `.` as the decimal mark and says so.
+- A column kept as text because a few values are not numbers (`1.234,5O`) now carries a note naming them. Agents are told to put such notes on the board, so the board tells you too.
 
 Boards look designed and move:
 

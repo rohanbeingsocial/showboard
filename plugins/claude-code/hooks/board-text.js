@@ -1,6 +1,16 @@
 // Built by build.mjs from packages/showboard/src/text. Do not edit.
 
 // packages/showboard/src/spec/format.ts
+var SHORT_FORMS = {
+  pct: "%",
+  pe: "P/E",
+  pb: "P/B",
+  de: "D/E",
+  pnl: "P&L",
+  ...Object.fromEntries(
+    ["id", "roe", "roce", "roa", "eps", "ttm", "yoy", "qoq", "mom", "ytd", "aov", "nav", "ltp", "cagr", "xirr", "ebitda", "ebit", "ev", "etf", "ipo", "sku", "kpi", "gdp", "cpi"].map((w) => [w, w.toUpperCase()])
+  )
+};
 function toNumber(value) {
   if (typeof value === "number") return Number.isFinite(value) ? value : null;
   if (typeof value === "string" && value.trim() !== "") {
