@@ -59,6 +59,7 @@ export const BOARD_DESIGN = [
   "- One idea per chart, titled by what it shows. Bars ≤ 4 series, lines ≤ 5; horizontal bars past 8 categories or for long names; a pie only for parts of one whole.",
   "- Rows of 2 (metrics up to 4); a chart beside the table that explains it, not two tables side by side. Sections only for 2+ groups.",
   "- Tables ≤ 7 columns and ≤ 15 rows unless asked. Notes ≤ 5 bullets, each opening with its point in **bold**; tone good/warn/bad only when the news is.",
+  "- If describe_data's notes say a column you show was kept as text, had values left empty or was read a guessed way, say so in a warn note with the rows it names.",
 ].join("\n");
 
 const tool = <S extends z.ZodObject>(def: { name: string; description: string; input: S; run(input: z.infer<S>): Promise<unknown> }): ToolDef => def as unknown as ToolDef;

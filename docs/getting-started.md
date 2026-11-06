@@ -62,7 +62,7 @@ npx showboard init .   # Claude Code; --agent codex,cursor,gemini… for others
 claude                 # then open http://localhost:4710, or run: npx showboard pane
 ```
 
-Each sheet becomes a table the agent can query and join. Loading copes with the usual mess: title rows above the header, blank rows, "Total" rows (skipped, so sums do not double count), `N/A` in number columns, `₹1,23,456` and `$1,234.50` typed as text, Excel dates, and `15-Mar-2026` or `25/04/2026` text dates. Amounts print in the files' own currency, ₹ in lakh and crore for rupee sheets. Your files are only read, and they reload when you save them. To try it on sample files: `cd examples/spreadsheets`, run `claude` and open http://localhost:4720.
+Each sheet becomes a table the agent can query and join. Loading copes with the usual mess: title rows above the header, blank rows, "Total" rows (skipped, so sums do not double count), `N/A` in number columns, `₹1,23,456`, `$1,234.50` and `1.234,50` typed as text (even both styles in one column; a value that could be read two ways is named in a note rather than guessed), Excel dates, and `15-Mar-2026` or `25/04/2026` text dates. Amounts print in the files' own currency, ₹ in lakh and crore for rupee sheets. Your files are only read, and they reload when you save them. To try it on sample files: `cd examples/spreadsheets`, run `claude` and open http://localhost:4720.
 
 ### A database, no app
 

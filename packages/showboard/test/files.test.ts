@@ -33,8 +33,54 @@ describe("values", () => {
     expect(parseNumberText("(1,200)")).toBe(-1200);
     expect(parseNumberText("-3.5%")).toBe(-3.5);
     expect(parseNumberText("Rs. 500")).toBe(500);
-    expect(parseNumberText("12,34")).toBeNull();
     expect(parseNumberText("abc")).toBeNull();
+    expect(parseNumberText("1,2,3")).toBeNull();
+    expect(parseNumberText("0612")).toBe(612); // the column check keeps codes like this as text
+    expect(parseNumberText("03.04.2026")).toBeNull();
+  });
+
+  it("parses comma decimals, and settles numbers that read two ways", () => {
+    expect(parseNumberText("1.234,50")).toBe(1234.5);
+    expect(parseNumberText("1 234,50 €")).toBe(1234.5);
+    expect(parseNumberText("1'234.50")).toBe(1234.5);
+    expect(parseNumberText("12,34")).toBe(12.34);
+    expect(parseNumberText("-1.234.567,8")).toBe(-1234567.8);
+    expect(parseNumberText("1,234")).toBe(1234);
+    expect(parseNumberText("1,234", ",")).toBe(1.234);
+    expect(parseNumberText("1.234")).toBe(1.234);
+    expect(parseNumberText("1.234", ",")).toBe(1234);
+    expect(parseNumberText("0.500", ",")).toBe(0.5);
+  });
+
+  it("reads each value in a column by its own decimal mark", () => {
+    const amounts = (...values: string[]) => shapeSheet([["Item", "Amount"], ...values.map((v, i) => [`item ${i + 1}`, v])])!;
+    const mixed = amounts("1.234,50", "1,234.50", "99.00");
+    expect(mixed.columns[1]!.type).toBe("real");
+    expect(mixed.rows.map((r) => r[1])).toEqual([1234.5, 1234.5, 99]);
+    expect(mixed.notes.join(" ")).toMatch(/mixes 2 values written like 1,234.50 with 1 like 1.234,50/);
+
+    // A comma-decimal column reads "1.234" as a thousand.
+    expect(amounts("1.234,50", "12,5", "1.234").rows.map((r) => r[1])).toEqual([1234.5, 12.5, 1234]);
+    // With nothing to go by, "." is the decimal mark, and the note says it was a guess.
+    const guessed = amounts("1.234", "12.345");
+    expect(guessed.rows.map((r) => r[1])).toEqual([1.234, 12.345]);
+    expect(guessed.notes.join(" ")).toMatch(/could be a decimal or a thousands mark/);
+    expect(amounts("1,234", "12,500").notes).toEqual([]);
+
+    // Split down the middle: a value that reads two ways is left empty and named.
+    const split = amounts("1.234,50", "1,234.50", "5.000");
+    expect(split.rows.map((r) => r[1])).toEqual([1234.5, 1234.5, null]);
+    expect(split.notes.join(" ")).toMatch(/1 value left empty because each reads two ways \(row 4 "5.000"\)/);
+    // Mostly one way: it follows the rest.
+    const most = amounts("1,234.50", "2.5", "3.75", "10.5", "1.234,50", "5,000");
+    expect(most.rows.map((r) => r[1])).toEqual([1234.5, 2.5, 3.75, 10.5, 1234.5, 5000]);
+    expect(most.notes.join(" ")).toMatch(/used "\." as the decimal mark, like most of the column/);
+
+    // One value that is not a number keeps the column as text, and the note warns against summing it.
+    const typo = amounts("1,234.50", "99.00", "1.234,5O");
+    expect(typo.columns[1]!.type).toBe("text");
+    expect(typo.notes.join(" ")).toMatch(/kept as text: 1 of 3 values is not a number \(row 4 "1.234,5O"\), so a sum over it would be wrong/);
+    expect(shapeSheet([["Name", "City"], ["A", "Pune"], ["B", "Delhi"]])!.notes).toEqual([]);
   });
 
   it("reads the currency amounts are written in", () => {
@@ -213,6 +259,19 @@ describe("openFiles", () => {
 
   it("refuses when nothing can be read", async () => {
     await expect(openFiles([join(dir, "missing.csv")])).rejects.toThrow(/No tables could be read.*not found/);
+  });
+
+  it("totals a column that mixes 1.234,50 and 1,234.50", async () => {
+    const own = mkdtempSync(join(tmpdir(), "showboard-mixed-"));
+    try {
+      writeFileSync(join(own, "orders.csv"), "Item;Amount\nDesk;1.234,50\nLamp;1,234.50\nRug;99.00\n");
+      const mixed = await openFiles([own]);
+      expect((await mixed.query("SELECT sum(amount) AS total FROM orders", limits)).rows).toEqual([{ total: 2568 }]);
+      expect((await mixed.describe())[0]!.notes?.join(" ")).toMatch(/each is read by its own decimal mark/);
+      await mixed.close();
+    } finally {
+      rmSync(own, { recursive: true, force: true });
+    }
   });
 
   it("shows source, headings and notes in describe_data", async () => {
